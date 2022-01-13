@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import {FileEntity} from "../../api/fileApi";
+import FileTagsSelect from "./FileTagsSelect.vue";
 
 const props = defineProps<{
   file: FileEntity
@@ -7,15 +8,16 @@ const props = defineProps<{
 </script>
 
 <template>
-  <el-card class="box-card">
+  <el-card>
     <template #header>
       <div class="card-header">
         <span>{{ file.fileName }}</span>
-        <!--        <el-button class="button" type="text">Operation button</el-button>-->
       </div>
     </template>
-    <el-form>
-      <el-form-item label="标签"></el-form-item>
+    <el-form label-position="top" size="large">
+      <el-form-item label="标签">
+        <FileTagsSelect/>
+      </el-form-item>
     </el-form>
   </el-card>
 </template>

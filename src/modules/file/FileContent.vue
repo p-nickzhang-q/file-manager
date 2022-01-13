@@ -21,7 +21,7 @@ getData()
   <BasicBreadcrumb :tab="tab"/>
   <br>
   <el-row :gutter="10">
-    <el-col :span="20">
+    <el-col :span="16">
       <el-row :gutter="10" align="middle" v-loading="fileLoading">
         <el-col :span="3" v-for="(item,i) of items" :key="i">
           <BasicFile :name="item.fileName"
@@ -36,7 +36,7 @@ getData()
         </el-col>
       </el-row>
     </el-col>
-    <el-col :span="4">
+    <el-col :span="8">
       <FileDetail :file="currentFile"/>
     </el-col>
   </el-row>

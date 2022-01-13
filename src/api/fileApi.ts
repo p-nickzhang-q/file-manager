@@ -7,7 +7,7 @@ export class FileEntity {
     isDisk: boolean = false
 }
 
-class FileApi extends Api {
+class FileApi extends Api<FileEntity> {
     path: string = '/file';
 
     async fetch(path?: string): Promise<FileEntity[]> {

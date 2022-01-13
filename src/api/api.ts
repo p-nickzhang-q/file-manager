@@ -16,12 +16,12 @@ type RequestParam = {
     params?: any
 }
 
-export abstract class Api {
+export abstract class Api<Entity> {
     abstract path: string
 
     async request({url, data, params, method}: RequestParam) {
         url = url ? `${this.path}/${url}` : this.path;
-        return await axiosInstance.request<any, FileEntity[]>({
+        return await axiosInstance.request<any, Entity[]>({
             url,
             data,
             params,
