@@ -1,4 +1,10 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
+import {MouseMenuDirective} from '@howdyjs/mouse-menu'
+import "element-plus/theme-chalk/src/message-box.scss"
 
-createApp(App).mount('#app')
+const app = createApp(App);
+
+app.directive("mouseMenu", MouseMenuDirective);
+
+app.mount('#app')

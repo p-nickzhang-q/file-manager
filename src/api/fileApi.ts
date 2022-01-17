@@ -17,6 +17,39 @@ class FileApi extends Api<FileEntity> {
     async open(path: string) {
         await super.request({method: 'post', params: {path}})
     }
+
+    async move(data: FileEntity, targetPath: string) {
+        await super.request({
+            url: '/move',
+            method: 'put',
+            data,
+            params: {
+                targetPath
+            }
+        })
+    }
+
+    async rename(data: FileEntity, newName: string) {
+        await super.request({
+            url: '/rename',
+            method: 'put',
+            data,
+            params: {
+                newName
+            }
+        })
+    }
+
+    async copy(data: FileEntity, targetPath: string) {
+        await super.request({
+            url: '/copy',
+            method: 'put',
+            data,
+            params: {
+                targetPath
+            }
+        })
+    }
 }
 
 export const FileApiInstance = new FileApi()
