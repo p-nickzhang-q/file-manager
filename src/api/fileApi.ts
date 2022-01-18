@@ -5,6 +5,7 @@ export class FileEntity {
     filePath: string = ""
     isDirectory: boolean = false
     isDisk: boolean = false
+    readonly isFile: boolean = !this.isDirectory && !this.isDisk
 }
 
 class FileApi extends Api<FileEntity> {
@@ -48,6 +49,14 @@ class FileApi extends Api<FileEntity> {
             params: {
                 targetPath
             }
+        })
+    }
+
+    async delete(data: FileEntity) {
+        await super.request({
+            url: '/delete',
+            method: 'put',
+            data
         })
     }
 }

@@ -1,5 +1,6 @@
 import axios, {Method} from "axios";
 import {FileEntity} from "./fileApi";
+import {errorMessage} from "../util/common";
 
 export const axiosInstance = axios.create({
     baseURL: `/api`
@@ -7,6 +8,10 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(value => {
     return value.data
+}, error => {
+    if (error.response) {
+        errorMessage(error.response.data.message)
+    }
 })
 
 type RequestParam = {

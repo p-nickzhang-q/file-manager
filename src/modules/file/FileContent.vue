@@ -8,16 +8,54 @@ import useFile from "../../hooks/useFile";
 import FileDetail from "./FileDetail.vue";
 import useMouseOptions from "../../hooks/useMouseOptions";
 import BasicDialog from "../../components/BasicDialog.vue";
-import {confirm} from "../../util/common";
-import useRename from "./useRename";
+import {confirm, errorMessage} from "../../util/common";
+import {useRename} from "./useRename";
+import FileTree from "./FileTree.vue";
+import {useMove} from "./useMove";
+import {useCopy} from "./useCopy";
 
 const props = defineProps({
   tab: String
 });
 
 const {items, getData, onGoTo, fileLoading, currentFile, onViewDetail, currentPath} = useFile(props.tab!);
+const {renameDialog, newName, newNameFile, handleRename} = useRename(getData, currentPath);
 
-const {renameDialog, newName, getMouseOptions, handleRename} = useRename(getData, currentPath);
+const {moveDialog, moveFile, onMoveTreeNodeClick, handleMove} = useMove(getData, currentPath);
+
+const {copyDialog, copyFile, handleCopy, onCopyTreeNodeClick} = useCopy(getData, currentPath);
+const {getMouseOptions} = useMouseOptions<FileEntity>([
+  {
+    label: "重命名",
+    fn: t => {
+      renameDialog.value.open()
+      newNameFile.value = t;
+      newName.value = t.fileName
+    }
+  },
+  {
+    label: "移动",
+    fn: t => {
+      moveDialog.value.open()
+      moveFile.value = t
+    }
+  },
+  {
+    label: "复制",
+    fn: t => {
+      copyDialog.value.open()
+      copyFile.value = t
+    }
+  },
+  {
+    label: "删除",
+    fn: async (t) => {
+      await confirm("确认删除吗")
+      await FileApiInstance.delete(t)
+      await getData(currentPath.value)
+    }
+  },
+]);
 
 
 getData()
@@ -52,7 +90,19 @@ getData()
       </el-form-item>
     </el-form>
     <template #button>
-      <el-button @click="handleRename">保存</el-button>
+      <el-button @click="handleRename">确认</el-button>
+    </template>
+  </BasicDialog>
+  <BasicDialog title="移动" ref="moveDialog">
+    <FileTree @onNodeClick="onMoveTreeNodeClick"/>
+    <template #button>
+      <el-button @click="handleMove">确认</el-button>
+    </template>
+  </BasicDialog>
+  <BasicDialog title="复制" ref="copyDialog">
+    <FileTree @onNodeClick="onCopyTreeNodeClick"/>
+    <template #button>
+      <el-button @click="handleCopy">确认</el-button>
     </template>
   </BasicDialog>
 </template>
