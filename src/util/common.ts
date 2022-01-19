@@ -17,4 +17,8 @@ export function errorMessage(message: string) {
     ElMessage.error(message)
 }
 
+export function message(message = "成功") {
+    ElMessage.success(message)
+}
+
 export type MouseOptionFunc = (getData: (path?: string) => Promise<any>, currentPath: Ref<string>) => any

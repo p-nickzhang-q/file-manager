@@ -6,6 +6,7 @@ export class FileEntity {
     isDirectory: boolean = false
     isDisk: boolean = false
     readonly isFile: boolean = !this.isDirectory && !this.isDisk
+    tagIds: string[] = []
 }
 
 class FileApi extends Api<FileEntity> {

@@ -13,12 +13,11 @@ export class TagEntity {
 export class TagFileEntity {
     tagIds: string[];
     filePath: string;
-    tags: TagEntity[]
+    tags: TagEntity[] = []
 
-    constructor(tagIds: string[], filePath: string, tags: TagEntity[]) {
+    constructor(tagIds: string[], filePath: string) {
         this.tagIds = tagIds;
         this.filePath = filePath;
-        this.tags = tags;
     }
 }
 
@@ -52,7 +51,7 @@ export class TagFileApi extends Api<TagFileEntity> {
         })
     }
 
-    async save(data: TagEntity) {
+    async save(data: TagFileEntity) {
         return await super.request({
             method: "post",
             url: "/files",

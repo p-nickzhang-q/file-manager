@@ -80,7 +80,7 @@ getData()
       </el-row>
     </el-col>
     <el-col :span="8">
-      <FileDetail :file="currentFile"/>
+      <FileDetail :value="currentFile" @success="getData(currentPath)"/>
     </el-col>
   </el-row>
   <BasicDialog ref="renameDialog" title="重命名">
