@@ -42,7 +42,7 @@ const onSave = async () => {
     </template>
     <el-form label-position="top" size="large">
       <el-form-item label="标签">
-        <FileTagsSelect v-model="sourceValue.tagIds"/>
+        <FileTagsSelect v-model:value="sourceValue.tagIds"/>
       </el-form-item>
     </el-form>
   </el-card>

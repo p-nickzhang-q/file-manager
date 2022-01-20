@@ -14,9 +14,10 @@ import FileTree from "./FileTree.vue";
 import {useMove} from "./useMove";
 import {useCopy} from "./useCopy";
 
-const props = defineProps({
-  tab: String
-});
+const props = defineProps<{
+  tab: string,
+  path?: string
+}>();
 
 const {items, getData, onGoTo, fileLoading, currentFile, onViewDetail, currentPath} = useFile(props.tab!);
 const {renameDialog, newName, newNameFile, handleRename} = useRename(getData, currentPath);
@@ -24,6 +25,7 @@ const {renameDialog, newName, newNameFile, handleRename} = useRename(getData, cu
 const {moveDialog, moveFile, onMoveTreeNodeClick, handleMove} = useMove(getData, currentPath);
 
 const {copyDialog, copyFile, handleCopy, onCopyTreeNodeClick} = useCopy(getData, currentPath);
+const emits = defineEmits(["openNewTap"]);
 const {getMouseOptions} = useMouseOptions<FileEntity>([
   {
     label: "重命名",
@@ -55,10 +57,16 @@ const {getMouseOptions} = useMouseOptions<FileEntity>([
       await getData(currentPath.value)
     }
   },
+  {
+    label: "新标签打开",
+    fn: t => {
+      emits("openNewTap", t.filePath)
+    }
+  }
 ]);
 
 
-getData()
+getData(props.path)
 </script>
 
 <template>
@@ -67,15 +75,10 @@ getData()
   <el-row :gutter="10">
     <el-col :span="16" v-loading="fileLoading">
       <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
-        <BasicFile style="width: 100%;" :name="item.fileName"
+        <BasicFile style="width: 100%;" :file="item"
                    v-mouse-menu="getMouseOptions(item)"
                    @click="onViewDetail(item)"
                    @dblclick.native="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
-          <template #icon>
-            <box v-if="item.isDisk"/>
-            <folder v-else-if="item.isDirectory"/>
-            <document v-else/>
-          </template>
         </BasicFile>
       </el-row>
     </el-col>

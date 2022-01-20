@@ -24,6 +24,7 @@ export default function (tabName: string) {
 
     const getData = async (path?: string) => {
         items.value = await FileApiInstance.fetch(path);
+        currentPath.value = path
     }
 
     const onGoTo = async (filePath = "", fromBread = false, isDocument = false) => {
@@ -34,7 +35,6 @@ export default function (tabName: string) {
         }
         if (!isDocument) {
             await getData(filePath)
-            currentPath.value = filePath
         } else {
             await FileApiInstance.open(filePath)
         }
@@ -43,6 +43,9 @@ export default function (tabName: string) {
     }
 
     const breads = computed(() => {
+        if (currentPath.value === undefined) {
+            currentPath.value = ""
+        }
         return currentPath.value.split('/').filter(Boolean)
     });
     return {items, getData, onGoTo, currentPath, breads, fileLoading, currentFile, onViewDetail};

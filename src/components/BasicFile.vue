@@ -1,21 +1,22 @@
 <script lang="ts" setup>
+
 import {defineProps} from "vue";
+import {FileEntity} from "../api/fileApi";
+import BasicFileIcon from "./BasicFileIcon.vue";
 
 defineProps({
-  name: String
+  file: FileEntity
 });
 </script>
 
 <template>
   <el-card shadow="hover">
-    <el-icon :size="30">
-      <slot name="icon"></slot>
-    </el-icon>
-    <div>
-      <slot>
-        <span>{{ name }}</span>
-      </slot>
-    </div>
+    <slot>
+      <BasicFileIcon :file="file"/>
+      <div>
+        <span>{{ file.fileName }}</span>
+      </div>
+    </slot>
   </el-card>
 </template>
 

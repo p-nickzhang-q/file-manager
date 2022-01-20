@@ -11,7 +11,7 @@
         :label="item.title"
         :name="item.name"
     >
-      <FileContent :tab="item.name"/>
+      <FileContent :tab="item.name" :path="item.path" @openNewTap="handleOpenNewTap"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -21,23 +21,33 @@ import FileContent from "./FileContent.vue";
 
 let tabIndex = 0
 const editableTabsValue = ref('0')
-const editableTabs = ref([
+
+interface Tab {
+  title: string;
+  name: string;
+  path?: string;
+}
+
+const editableTabs = ref<Tab[]>([
   {
     title: '文件',
     name: '0',
-    content: 'Tab0 content',
   },
 ])
 
+function addNewTab(path?: string) {
+  const newTabName = `${++tabIndex}`
+  editableTabs.value.push({
+    title: `文件`,
+    name: newTabName,
+    path
+  })
+  editableTabsValue.value = newTabName
+}
+
 const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
   if (action === 'add') {
-    const newTabName = `${++tabIndex}`
-    editableTabs.value.push({
-      title: `文件`,
-      name: newTabName,
-      content: 'New Tab content',
-    })
-    editableTabsValue.value = newTabName
+    addNewTab();
   } else if (action === 'remove') {
     const tabs = editableTabs.value
     let activeName = editableTabsValue.value
@@ -55,5 +65,9 @@ const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
     editableTabsValue.value = activeName
     editableTabs.value = tabs.filter((tab) => tab.name !== targetName)
   }
+}
+
+const handleOpenNewTap = (path: string) => {
+  addNewTab(path)
 }
 </script>

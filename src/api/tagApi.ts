@@ -1,4 +1,5 @@
 import {Api} from "./api";
+import {FileEntity} from "./fileApi";
 
 export class TagEntity {
     id: string
@@ -14,6 +15,7 @@ export class TagFileEntity {
     tagIds: string[];
     filePath: string;
     tags: TagEntity[] = []
+    file: FileEntity = new FileEntity()
 
     constructor(tagIds: string[], filePath: string) {
         this.tagIds = tagIds;
@@ -46,7 +48,7 @@ export class TagFileApi extends Api<TagFileEntity> {
             method: "get",
             url: "/files",
             params: {
-                tagIds: tagIds?.join(",")
+                tagIds
             }
         })
     }
