@@ -30,4 +30,9 @@ export function deepCopy<T>(data: T): T {
     return JSON.parse(JSON.stringify(data))
 }
 
+export function getFileNameByPath(filePath: string) {
+    const split = filePath.split("/");
+    return split[split.length - 1]
+}
+
 export type MouseOptionFunc = (getData: (path?: string) => Promise<any>, currentPath: Ref<string>) => any
