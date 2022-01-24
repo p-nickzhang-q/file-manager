@@ -35,4 +35,9 @@ export function getFileNameByPath(filePath: string) {
     return split[split.length - 1]
 }
 
-export type MouseOptionFunc = (getData: (path?: string) => Promise<any>, currentPath: Ref<string>) => any
+export type GetData = ((path?: string) => Promise<void>) | (() => Promise<void>);
+export type MouseOptionParam = {
+    currentPath: Ref<string>
+    getData: GetData,
+}
+

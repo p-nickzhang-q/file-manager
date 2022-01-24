@@ -4,9 +4,9 @@ import {defineProps} from "vue";
 import {FileEntity} from "../api/fileApi";
 import BasicFileIcon from "./BasicFileIcon.vue";
 
-defineProps({
-  file: FileEntity
-});
+withDefaults(defineProps<{
+  file?: FileEntity
+}>(), {});
 </script>
 
 <template>

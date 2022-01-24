@@ -1,8 +1,8 @@
 import {ref} from "vue";
 import {FileApiInstance, FileEntity} from "../../api/fileApi";
-import {MouseOptionFunc} from "../../util/common";
+import {MouseOptionParam} from "../../util/common";
 
-export const useMove: MouseOptionFunc = (getData, currentPath) => {
+export const useMove = ({getData, currentPath}: MouseOptionParam) => {
     const moveDialog = ref<any>();
     const moveFile = ref<FileEntity>();
     const newFolderPath = ref<string>();
@@ -14,5 +14,9 @@ export const useMove: MouseOptionFunc = (getData, currentPath) => {
         await getData(currentPath.value)
         moveDialog.value.close()
     }
-    return {moveDialog, moveFile, onMoveTreeNodeClick, handleMove};
+    const openMove = (t: FileEntity) => {
+        moveDialog.value.open()
+        moveFile.value = t
+    };
+    return {moveDialog, moveFile, onMoveTreeNodeClick, handleMove, openMove};
 };

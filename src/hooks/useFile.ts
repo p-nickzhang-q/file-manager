@@ -1,9 +1,10 @@
-import {computed, ref} from "vue";
+import {computed, defineEmits, ref} from "vue";
 import {FileApiInstance, FileEntity} from "../api/fileApi";
+import {confirm, GetData} from "../util/common";
 
 const map = new Map();
 
-export default function (tabName: string) {
+export function useFile(tabName: string) {
 
     if (!map.has(tabName)) {
         const items = ref<FileEntity[]>([]);
@@ -48,5 +49,31 @@ export default function (tabName: string) {
         }
         return currentPath.value.split('/').filter(Boolean)
     });
-    return {items, getData, onGoTo, currentPath, breads, fileLoading, currentFile, onViewDetail};
+    const emits = defineEmits(["openNewTap"]);
+
+    const handleOpenOnNewTab = (t: FileEntity) => {
+        emits("openNewTap", t.filePath)
+    };
+    return {
+        items,
+        getData,
+        onGoTo,
+        currentPath,
+        breads,
+        fileLoading,
+        currentFile,
+        onViewDetail,
+        handleOpenOnNewTab,
+    };
+}
+
+export function useDelete(getData: any) {
+    const handleDelete = async (t: FileEntity) => {
+        await confirm("确认删除吗")
+        await FileApiInstance.delete(t)
+        getData.call();
+    };
+    return {
+        handleDelete
+    }
 }

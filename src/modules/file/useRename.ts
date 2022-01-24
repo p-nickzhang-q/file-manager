@@ -1,10 +1,10 @@
 import {ref} from "vue";
 import {FileApiInstance, FileEntity} from "../../api/fileApi";
 import useMouseOptions from "../../hooks/useMouseOptions";
-import {confirm, MouseOptionFunc} from "../../util/common";
 import {Ref} from "@vue/reactivity";
+import {MouseOptionParam} from "../../util/common";
 
-export const useRename: MouseOptionFunc = (getData, currentPath) => {
+export const useRename = ({getData, currentPath}: MouseOptionParam ) => {
     const renameDialog: any = ref(null);
     const newNameFile = ref<FileEntity>(new FileEntity());
     const newName = ref<string>();
@@ -15,5 +15,10 @@ export const useRename: MouseOptionFunc = (getData, currentPath) => {
         await getData(currentPath.value)
         renameDialog.value.close()
     }
-    return {renameDialog, newName, newNameFile, handleRename};
+    const openRename = (t: FileEntity) => {
+        renameDialog.value.open()
+        newNameFile.value = t;
+        newName.value = t.fileName
+    };
+    return {renameDialog, newName, newNameFile, handleRename, openRename};
 }

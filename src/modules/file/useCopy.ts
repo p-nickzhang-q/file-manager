@@ -1,8 +1,8 @@
-import {MouseOptionFunc} from "../../util/common";
 import {ref} from "vue";
 import {FileApiInstance, FileEntity} from "../../api/fileApi";
+import {MouseOptionParam} from "../../util/common";
 
-export const useCopy: MouseOptionFunc = (getData, currentPath) => {
+export const useCopy = ({getData, currentPath}: MouseOptionParam) => {
     const copyDialog = ref<any>();
     const copyFile = ref<FileEntity>();
     const newFolderPath = ref<string>();
@@ -15,5 +15,9 @@ export const useCopy: MouseOptionFunc = (getData, currentPath) => {
     const onCopyTreeNodeClick = (file: FileEntity) => {
         newFolderPath.value = file.filePath
     }
-    return {copyDialog, copyFile, handleCopy, onCopyTreeNodeClick};
+    const openCopy = (t: FileEntity) => {
+        copyDialog.value.open()
+        copyFile.value = t
+    };
+    return {copyDialog, copyFile, handleCopy, onCopyTreeNodeClick, openCopy};
 }

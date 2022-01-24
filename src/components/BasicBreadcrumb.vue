@@ -1,5 +1,5 @@
 <script setup>
-import useFile from "../hooks/useFile";
+import {useFile} from "../hooks/useFile";
 
 const props = defineProps({
   path: String,

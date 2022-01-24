@@ -4,7 +4,7 @@ import {Folder, Document, Box} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import {FileApiInstance, FileEntity} from "../../api/fileApi";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
-import useFile from "../../hooks/useFile";
+import {useDelete, useFile} from "../../hooks/useFile";
 import FileDetail from "./FileDetail.vue";
 import useMouseOptions from "../../hooks/useMouseOptions";
 import BasicDialog from "../../components/BasicDialog.vue";
@@ -19,49 +19,44 @@ const props = defineProps<{
   path?: string
 }>();
 
-const {items, getData, onGoTo, fileLoading, currentFile, onViewDetail, currentPath} = useFile(props.tab!);
-const {renameDialog, newName, newNameFile, handleRename} = useRename(getData, currentPath);
+const {
+  items,
+  getData,
+  onGoTo,
+  fileLoading,
+  currentFile,
+  onViewDetail,
+  currentPath,
+  handleOpenOnNewTab,
+} = useFile(props.tab!);
+const {handleDelete} = useDelete(() => getData(currentPath.value));
+const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
 
-const {moveDialog, moveFile, onMoveTreeNodeClick, handleMove} = useMove(getData, currentPath);
+const {moveDialog, onMoveTreeNodeClick, handleMove, openMove} = useMove({getData, currentPath});
 
-const {copyDialog, copyFile, handleCopy, onCopyTreeNodeClick} = useCopy(getData, currentPath);
-const emits = defineEmits(["openNewTap"]);
+const {copyDialog, handleCopy, onCopyTreeNodeClick, openCopy} = useCopy({getData, currentPath});
+
+
 const {getMouseOptions} = useMouseOptions<FileEntity>([
   {
     label: "重命名",
-    fn: t => {
-      renameDialog.value.open()
-      newNameFile.value = t;
-      newName.value = t.fileName
-    }
+    fn: openRename
   },
   {
     label: "移动",
-    fn: t => {
-      moveDialog.value.open()
-      moveFile.value = t
-    }
+    fn: openMove
   },
   {
     label: "复制",
-    fn: t => {
-      copyDialog.value.open()
-      copyFile.value = t
-    }
+    fn: openCopy
   },
   {
     label: "删除",
-    fn: async (t) => {
-      await confirm("确认删除吗")
-      await FileApiInstance.delete(t)
-      await getData(currentPath.value)
-    }
+    fn: handleDelete
   },
   {
     label: "新标签打开",
-    fn: t => {
-      emits("openNewTap", t.filePath)
-    }
+    fn: handleOpenOnNewTab
   }
 ]);
 
