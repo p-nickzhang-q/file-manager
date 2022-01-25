@@ -12,7 +12,7 @@ const props = {
 
 const loadNode = async (node: Node, resolve: (data: FileEntity[]) => void) => {
   const filePath = node.data.filePath;
-  const fileEntities = await FileApiInstance.fetch(filePath);
+  const fileEntities = await FileApiInstance.fetch(filePath, true);
   resolve(fileEntities);
 }
 

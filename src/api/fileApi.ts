@@ -12,8 +12,8 @@ export class FileEntity {
 class FileApi extends Api<FileEntity> {
     path: string = '/file';
 
-    async fetch(path?: string): Promise<FileEntity[]> {
-        return await super.request({params: {path}, method: "get"})
+    async fetch(path?: string, isDirectory?: boolean): Promise<FileEntity[]> {
+        return await super.request({params: {path, isDirectory}, method: "get"})
     }
 
     async open(path: string) {

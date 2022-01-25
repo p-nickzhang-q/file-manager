@@ -6,7 +6,7 @@ import BasicFile from "../../components/BasicFile.vue";
 import BasicFileIcon from "../../components/BasicFileIcon.vue";
 import FileDetail from "../file/FileDetail.vue";
 import {useDelete, useFile} from "../../hooks/useFile";
-import {FileEntity} from "../../api/fileApi";
+import {FileApiInstance, FileEntity} from "../../api/fileApi";
 import BasicDialog from "../../components/BasicDialog.vue";
 import FileTree from "../file/FileTree.vue";
 import {useRename} from "../file/useRename";
@@ -28,12 +28,18 @@ const onViewDetail = (row: TagFileEntity) => {
   row.file.tagIds = row.tagIds;
   currentFile.value = row.file;
 }
-const {handleOpenOnNewTab} = useFile('tag');
+const emits = defineEmits(["openNewTap"]);
 const {handleDelete} = useDelete(() => onSearch());
 const {newName, handleRename, openRename, renameDialog} = useRename({getData: onSearch, currentPath: ref("")});
 const {onMoveTreeNodeClick, handleMove, openMove, moveDialog} = useMove({getData: onSearch, currentPath: ref("")});
 const {handleCopy, onCopyTreeNodeClick, openCopy, copyDialog} = useCopy({getData: onSearch, currentPath: ref("")});
-
+const handleOpen = async (file: FileEntity) => {
+  if (file.isFile) {
+    await FileApiInstance.open(file.filePath)
+  } else {
+    await emits('openNewTap', file.filePath)
+  }
+}
 </script>
 
 <template>
@@ -51,7 +57,7 @@ const {handleCopy, onCopyTreeNodeClick, openCopy, copyDialog} = useCopy({getData
       </el-col>
     </el-row>
   </el-form>
-  <el-divider content-position="left"></el-divider>
+  <el-divider content-position="left">❥(^_-)</el-divider>
   <el-row>
     <el-col :span="16">
       <el-table :data="content" style="width: 100%" v-loading="loading" @row-click="onViewDetail">
@@ -65,7 +71,7 @@ const {handleCopy, onCopyTreeNodeClick, openCopy, copyDialog} = useCopy({getData
         <!--   todo显示标签     -->
         <el-table-column label="操作">
           <template #default="{row}">
-            <el-button type="text">打开</el-button>
+            <el-button type="text" @click="handleOpen(row.file)">打开</el-button>
             <el-button type="text" @click="openRename(row.file)">重命名</el-button>
             <el-button type="text" @click="openMove(row.file)">移动</el-button>
             <el-button type="text" @click="openCopy(row.file)">复制</el-button>

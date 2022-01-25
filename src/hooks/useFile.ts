@@ -49,11 +49,7 @@ export function useFile(tabName: string) {
         }
         return currentPath.value.split('/').filter(Boolean)
     });
-    const emits = defineEmits(["openNewTap"]);
 
-    const handleOpenOnNewTab = (t: FileEntity) => {
-        emits("openNewTap", t.filePath)
-    };
     return {
         items,
         getData,
@@ -63,7 +59,6 @@ export function useFile(tabName: string) {
         fileLoading,
         currentFile,
         onViewDetail,
-        handleOpenOnNewTab,
     };
 }
 

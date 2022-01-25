@@ -18,7 +18,7 @@ const props = defineProps<{
   tab: string,
   path?: string
 }>();
-
+const emits = defineEmits(["openNewTap"]);
 const {
   items,
   getData,
@@ -27,7 +27,6 @@ const {
   currentFile,
   onViewDetail,
   currentPath,
-  handleOpenOnNewTab,
 } = useFile(props.tab!);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
@@ -56,7 +55,9 @@ const {getMouseOptions} = useMouseOptions<FileEntity>([
   },
   {
     label: "新标签打开",
-    fn: handleOpenOnNewTab
+    fn: t => {
+      emits('openNewTap', t.filePath)
+    }
   }
 ]);
 

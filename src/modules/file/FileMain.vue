@@ -79,4 +79,8 @@ const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
 const handleOpenNewTap = (path: string) => {
   addNewTab(path)
 }
+
+defineExpose({
+  addNewTab
+})
 </script>
