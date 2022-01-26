@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import {Folder, Document, Box} from '@element-plus/icons-vue'
-import {defineProps} from "vue";
 import {FileEntity} from "../api/fileApi";
 defineProps({
   file: FileEntity

@@ -74,7 +74,7 @@ getData(props.path)
         <BasicFile style="width: 100%;" :file="item"
                    v-mouse-menu="getMouseOptions(item)"
                    @click="onViewDetail(item)"
-                   @dblclick.native="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
+                   @dblclick="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
         </BasicFile>
       </el-row>
     </el-col>

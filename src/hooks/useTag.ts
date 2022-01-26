@@ -5,8 +5,8 @@ const tagOptions = ref<TagEntity[]>([]);
 
 export default function () {
 
-    const getTags = async (keyWords?: string) => {
-        tagOptions.value = await TagApiInstance.fetch(keyWords);
+    const getTags = async () => {
+        tagOptions.value = await TagApiInstance.fetch();
     }
 
     return {

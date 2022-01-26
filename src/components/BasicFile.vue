@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 
-import {defineProps} from "vue";
 import {FileEntity} from "../api/fileApi";
 import BasicFileIcon from "./BasicFileIcon.vue";
 

@@ -29,6 +29,8 @@ defineExpose({
       v-model="dialogVisible"
       :title="props.title"
       :width="props.width"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       append-to-body
   >
     <slot></slot>

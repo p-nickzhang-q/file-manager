@@ -12,6 +12,7 @@ import FileTree from "../file/FileTree.vue";
 import {useRename} from "../file/useRename";
 import {useMove} from "../file/useMove";
 import {useCopy} from "../file/useCopy";
+import TagManage from "./TagManage.vue";
 
 const currentFile = ref<FileEntity>(new FileEntity())
 const tagIds = ref<string[]>([]);
@@ -40,20 +41,32 @@ const handleOpen = async (file: FileEntity) => {
     await emits('openNewTap', file.filePath)
   }
 }
+
+const tabManageDialog = ref<any>(null);
+const tabManage = ref<any>(null);
+const openTagManage = async () => {
+  tabManageDialog.value.open()
+  await nextTick(async () => {
+    await tabManage.value.getTags()
+  })
+}
 </script>
 
 <template>
   <el-form>
     <el-row :gutter="10">
-      <el-col :span="23">
+      <el-col :span="20">
         <el-form-item>
           <FileTagsSelect v-model:value="tagIds"/>
         </el-form-item>
       </el-col>
-      <el-col :span="1">
+      <el-col :span="2">
         <el-form-item>
           <el-button @click="onSearch">查询</el-button>
         </el-form-item>
+      </el-col>
+      <el-col :span="2">
+        <el-button @click="openTagManage">标签管理</el-button>
       </el-col>
     </el-row>
   </el-form>
@@ -105,6 +118,9 @@ const handleOpen = async (file: FileEntity) => {
     <template #button>
       <el-button @click="handleCopy">确认</el-button>
     </template>
+  </BasicDialog>
+  <BasicDialog title="标签管理" ref="tabManageDialog">
+    <TagManage ref="tabManage"/>
   </BasicDialog>
 </template>
 
