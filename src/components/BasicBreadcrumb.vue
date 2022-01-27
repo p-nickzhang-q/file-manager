@@ -5,8 +5,8 @@ const props = defineProps({
   path: String,
   tab: String
 });
-
-const {onGoTo, breads} = useFile(props.tab);
+const emits = defineEmits(["goto"]);
+const {onGoTo, breads} = useFile(props.tab, emits);
 
 </script>
 

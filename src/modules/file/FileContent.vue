@@ -19,7 +19,7 @@ const props = defineProps<{
   tab: string,
   path?: string
 }>();
-const emits = defineEmits(["openNewTap"]);
+const emits = defineEmits(["openNewTap", "goto"]);
 
 const {
   items,
@@ -30,8 +30,9 @@ const {
   onViewDetail,
   currentPath,
   searchValue,
-  onSearch
-} = useFile(props.tab!);
+  onSearch,
+  emitGoto
+} = useFile(props.tab!, emits);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
 
@@ -71,7 +72,7 @@ getData(props.path)
 </script>
 
 <template>
-  <BasicBreadcrumb :tab="tab"/>
+  <BasicBreadcrumb :tab="tab" @goto="emitGoto($event)"/>
   <br>
   <el-row :gutter="10">
     <el-col :span="16" v-loading="fileLoading">

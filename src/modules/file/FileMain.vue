@@ -11,14 +11,14 @@
         :label="item.title"
         :name="item.name"
     >
-      <FileContent :tab="item.name" :path="item.path" @openNewTap="handleOpenNewTap"/>
+      <FileContent :tab="item.name" :path="item.path" @openNewTap="handleOpenNewTap" @goto="onGoTo($event,item.name)"/>
     </el-tab-pane>
   </el-tabs>
 </template>
 <script lang="ts" setup>
 import {ref} from 'vue'
 import FileContent from "./FileContent.vue";
-import {getFileNameByPath} from "../../util/common";
+import {defaultTabTitle, getFileNameByPath} from "../../util/common";
 
 let tabIndex = 0
 const editableTabsValue = ref('0')
@@ -29,22 +29,15 @@ interface Tab {
   path?: string;
 }
 
-const defaultTitle = '我的电脑';
-
 const editableTabs = ref<Tab[]>([
   {
-    title: defaultTitle,
+    title: defaultTabTitle,
     name: '0',
   },
 ])
 
 function addNewTab(path?: string) {
-  let title: string;
-  if (path) {
-    title = getFileNameByPath(path);
-  } else {
-    title = defaultTitle
-  }
+  let title: string = getFileNameByPath(path);
   const newTabName = `${++tabIndex}`
   editableTabs.value.push({
     title,
@@ -78,6 +71,11 @@ const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
 
 const handleOpenNewTap = (path: string) => {
   addNewTab(path)
+}
+
+const onGoTo = (path: string, tabName: string) => {
+  const find = editableTabs.value.find(value => value.name === tabName)!;
+  find.title = getFileNameByPath(path)
 }
 
 defineExpose({

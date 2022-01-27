@@ -4,7 +4,7 @@ import {confirm, GetData} from "../util/common";
 
 const map = new Map();
 
-export function useFile(tabName: string) {
+export function useFile(tabName: string, emits?: any) {
 
     if (!map.has(tabName)) {
         const items = ref<FileEntity[]>([]);
@@ -29,6 +29,12 @@ export function useFile(tabName: string) {
         currentPath.value = path
     }
 
+    function emitGoto(filePath: string) {
+        if (emits) {
+            emits('goto', filePath)
+        }
+    }
+
     const onGoTo = async (filePath = "", fromBread = false, isDocument = false) => {
         fileLoading.value = true
         if (fromBread) {
@@ -36,6 +42,7 @@ export function useFile(tabName: string) {
             filePath = breads.value.slice(0, index).join('/');
         }
         if (!isDocument) {
+            emitGoto(filePath);
             await getData(filePath)
         } else {
             await FileApiInstance.open(filePath)
@@ -69,7 +76,8 @@ export function useFile(tabName: string) {
         currentFile,
         onViewDetail,
         searchValue,
-        onSearch
+        onSearch,
+        emitGoto
     };
 }
 

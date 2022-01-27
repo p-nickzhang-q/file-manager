@@ -35,7 +35,7 @@ const showSize = computed(() => {
     return size / 1024;
   }
 
-  let number = sourceValue.value.size;
+  let number = sourceValue.value.size || 0;
   if (number === 0) {
     return ``
   }
