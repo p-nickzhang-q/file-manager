@@ -63,6 +63,16 @@ class FileApi extends Api<FileEntity> {
             data
         })
     }
+
+    async search(search: string, path?: string) {
+        return await super.request({
+            url: "/search",
+            method: "get",
+            params: {
+                search, path
+            }
+        })
+    }
 }
 
 export const FileApiInstance = new FileApi()

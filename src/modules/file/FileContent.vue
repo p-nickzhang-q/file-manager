@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
-import {Folder, Document, Box} from '@element-plus/icons-vue'
+import {Folder, Document, Box, Search} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import {FileApiInstance, FileEntity} from "../../api/fileApi";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
@@ -20,6 +20,7 @@ const props = defineProps<{
   path?: string
 }>();
 const emits = defineEmits(["openNewTap"]);
+
 const {
   items,
   getData,
@@ -28,6 +29,8 @@ const {
   currentFile,
   onViewDetail,
   currentPath,
+  searchValue,
+  onSearch
 } = useFile(props.tab!);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
@@ -64,6 +67,7 @@ const {getMouseOptions} = useMouseOptions<FileEntity>([
 
 
 getData(props.path)
+
 </script>
 
 <template>
@@ -82,6 +86,15 @@ getData(props.path)
       </BasicScrollbar>
     </el-col>
     <el-col :span="8">
+      <el-row>
+        <el-input
+            v-model="searchValue"
+            size="large"
+            placeholder="搜索"
+            :suffix-icon="Search"
+            @keyup.enter="onSearch"
+        />
+      </el-row>
       <FileDetail :value="currentFile" @success="getData(currentPath)"/>
     </el-col>
   </el-row>

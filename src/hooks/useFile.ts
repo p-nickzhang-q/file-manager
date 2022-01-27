@@ -11,13 +11,14 @@ export function useFile(tabName: string) {
         const currentPath = ref('');
         const fileLoading = ref(false);
         const currentFile = ref(new FileEntity());
+        const searchValue = ref<string>();
 
         map.set(tabName, {
-            items, currentPath, fileLoading, currentFile
+            items, currentPath, fileLoading, currentFile, searchValue
         })
     }
 
-    const {items, currentPath, fileLoading, currentFile} = map.get(tabName);
+    const {items, currentPath, fileLoading, currentFile, searchValue} = map.get(tabName);
 
     const onViewDetail = (item: any) => {
         currentFile.value = item
@@ -50,6 +51,14 @@ export function useFile(tabName: string) {
         return currentPath.value.split('/').filter(Boolean)
     });
 
+    const onSearch = async () => {
+        fileLoading.value = true
+        if (searchValue.value) {
+            items.value = await FileApiInstance.search(searchValue.value, currentPath.value);
+        }
+        fileLoading.value = false
+    }
+
     return {
         items,
         getData,
@@ -59,6 +68,8 @@ export function useFile(tabName: string) {
         fileLoading,
         currentFile,
         onViewDetail,
+        searchValue,
+        onSearch
     };
 }
 

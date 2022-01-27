@@ -61,6 +61,9 @@ const showSize = computed(() => {
       <el-form-item label="标签">
         <FileTagsSelect v-model:value="sourceValue.tagIds"/>
       </el-form-item>
+      <el-form-item label="文件路径">
+        {{ sourceValue.filePath }}
+      </el-form-item>
       <el-form-item label="文件大小">
         {{ showSize }}
       </el-form-item>
