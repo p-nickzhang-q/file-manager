@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import useTag from "../../hooks/useTag";
 import {TagApiInstance, TagEntity} from "../../api/tagApi";
-import {deepCopy, message} from "../../util/common";
+import {confirm, deepCopy, message} from "../../util/common";
+import {useHeight} from "../../hooks/useHeight";
 
 const tableData = ref<TagEntity[]>([]);
 const getTags = async () => {
@@ -51,10 +52,20 @@ const isEdit = (i: number) => {
   return editMap.value.get(i)!.edit
 }
 
+const onDelete = async (row: TagEntity) => {
+  await confirm("确认删除吗")
+  await TagApiInstance.remove(row.id);
+  message();
+  await getSelectTags()
+  await getTags()
+}
+
+const {height} = useHeight();
+
 </script>
 
 <template>
-  <el-table :data="tableData" border style="width: 100%">
+  <el-table :max-height="height" :data="tableData" border style="width: 100%">
     <el-table-column label="操作">
       <template #default="{row,$index}">
         <div v-if="isEdit($index)">
@@ -63,6 +74,7 @@ const isEdit = (i: number) => {
         </div>
         <div v-else>
           <el-button type="text" @click="onEdit($index,row)">编辑</el-button>
+          <el-button type="text" @click="onDelete(row)">删除</el-button>
         </div>
       </template>
     </el-table-column>

@@ -7,6 +7,9 @@ export class FileEntity {
     isDisk: boolean = false
     readonly isFile: boolean = !this.isDirectory && !this.isDisk
     tagIds: string[] = []
+    size: number = 0
+    lastUpdateTime: Date | null = null;
+    createTime: Date | null = null;
 }
 
 class FileApi extends Api<FileEntity> {

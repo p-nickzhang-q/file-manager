@@ -38,6 +38,10 @@ export class TagApi extends Api<TagEntity> {
     async save(data: TagEntity) {
         return await super.request({method: "post", data})
     }
+
+    async remove(...ids: string[]) {
+        return await super.request({method: "delete", params: {ids}})
+    }
 }
 
 export class TagFileApi extends Api<TagFileEntity> {

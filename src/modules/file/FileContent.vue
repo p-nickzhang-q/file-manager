@@ -13,6 +13,7 @@ import {useRename} from "./useRename";
 import FileTree from "./FileTree.vue";
 import {useMove} from "./useMove";
 import {useCopy} from "./useCopy";
+import BasicScrollbar from "../../components/BasicScrollbar.vue";
 
 const props = defineProps<{
   tab: string,
@@ -70,13 +71,15 @@ getData(props.path)
   <br>
   <el-row :gutter="10">
     <el-col :span="16" v-loading="fileLoading">
-      <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
-        <BasicFile style="width: 100%;" :file="item"
-                   v-mouse-menu="getMouseOptions(item)"
-                   @click="onViewDetail(item)"
-                   @dblclick="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
-        </BasicFile>
-      </el-row>
+      <BasicScrollbar>
+        <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
+          <BasicFile style="width: 100%;" :file="item"
+                     v-mouse-menu="getMouseOptions(item)"
+                     @click="onViewDetail(item)"
+                     @dblclick="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
+          </BasicFile>
+        </el-row>
+      </BasicScrollbar>
     </el-col>
     <el-col :span="8">
       <FileDetail :value="currentFile" @success="getData(currentPath)"/>
