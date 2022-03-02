@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import FileContent from "./FileContent.vue";
-import {defaultTabTitle, getFileNameByPath} from "../../util/common";
+import {defaultTabTitle, getTabNameByFilePath} from "../../util/common";
 
 let tabIndex = 0
 const editableTabsValue = ref('0')
@@ -37,7 +37,7 @@ const editableTabs = ref<Tab[]>([
 ])
 
 function addNewTab(path?: string) {
-  let title: string = getFileNameByPath(path);
+  let title: string = getTabNameByFilePath(path);
   const newTabName = `${++tabIndex}`
   editableTabs.value.push({
     title,
@@ -75,7 +75,7 @@ const handleOpenNewTap = (path: string) => {
 
 const onGoTo = (path: string, tabName: string) => {
   const find = editableTabs.value.find(value => value.name === tabName)!;
-  find.title = getFileNameByPath(path)
+  find.title = getTabNameByFilePath(path)
 }
 
 defineExpose({
