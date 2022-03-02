@@ -60,9 +60,7 @@ export function useFile(tabName: string, emits?: any) {
 
     const onSearch = async () => {
         fileLoading.value = true
-        if (searchValue.value) {
-            items.value = await FileApiInstance.search(searchValue.value, currentPath.value);
-        }
+        items.value = await FileApiInstance.search(searchValue.value, currentPath.value);
         fileLoading.value = false
     }
 

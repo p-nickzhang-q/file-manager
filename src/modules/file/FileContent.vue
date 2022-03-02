@@ -77,13 +77,15 @@ getData(props.path)
   <el-row :gutter="10">
     <el-col :span="16" v-loading="fileLoading">
       <BasicScrollbar>
-        <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
-          <BasicFile style="width: 100%;" :file="item"
-                     v-mouse-menu="getMouseOptions(item)"
-                     @click="onViewDetail(item)"
-                     @dblclick="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
-          </BasicFile>
-        </el-row>
+        <div>
+          <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
+            <BasicFile style="width: 100%;" :file="item"
+                       v-mouse-menu="getMouseOptions(item)"
+                       @click="onViewDetail(item)"
+                       @dblclick="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
+            </BasicFile>
+          </el-row>
+        </div>
       </BasicScrollbar>
     </el-col>
     <el-col :span="8">

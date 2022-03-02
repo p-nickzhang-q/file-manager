@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import {FileApiInstance, FileEntity} from "../../api/fileApi";
-import {useFile} from "../../hooks/useFile";
 import {onMounted, ref} from "vue";
 
 const props = {

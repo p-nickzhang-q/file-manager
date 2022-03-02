@@ -5,7 +5,7 @@ import {TagFileApiInstance, TagFileEntity} from "../../api/tagApi";
 import BasicFile from "../../components/BasicFile.vue";
 import BasicFileIcon from "../../components/BasicFileIcon.vue";
 import FileDetail from "../file/FileDetail.vue";
-import {useDelete, useFile} from "../../hooks/useFile";
+import {useDelete} from "../../hooks/useFile";
 import {FileApiInstance, FileEntity} from "../../api/fileApi";
 import BasicDialog from "../../components/BasicDialog.vue";
 import FileTree from "../file/FileTree.vue";
