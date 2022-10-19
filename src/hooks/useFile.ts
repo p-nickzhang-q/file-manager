@@ -1,6 +1,8 @@
 import {computed, defineEmits, ref} from "vue";
-import {FileApiInstance, FileEntity} from "../api/fileApi";
+import {FileApiInstance} from "../api/fileApi";
 import {confirm, GetData} from "../util/common";
+import {FileEntity} from "zhangyida-tools";
+import {fetchWithDisk} from "../api/file";
 
 const map = new Map();
 
@@ -25,7 +27,8 @@ export function useFile(tabName: string, emits?: any) {
     }
 
     const getData = async (path?: string) => {
-        items.value = await FileApiInstance.fetch(path);
+        // items.value = await FileApiInstance.fetch(path);
+        items.value = await fetchWithDisk(path)
         currentPath.value = path
     }
 
@@ -82,7 +85,7 @@ export function useFile(tabName: string, emits?: any) {
 export function useDelete(getData: any) {
     const handleDelete = async (t: FileEntity) => {
         await confirm("确认删除吗")
-        await FileApiInstance.delete(t)
+        await t.remove()
         getData.call();
     };
     return {

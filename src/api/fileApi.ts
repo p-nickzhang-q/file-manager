@@ -1,16 +1,17 @@
 import {Api} from "./api";
+import {FileEntity} from "zhangyida-tools";
 
-export class FileEntity {
-    fileName: string = ""
-    filePath: string = ""
-    isDirectory: boolean = false
-    isDisk: boolean = false
-    readonly isFile: boolean = !this.isDirectory && !this.isDisk
-    tagIds: string[] = []
-    size: number = 0
-    lastUpdateTime: Date | null = null;
-    createTime: Date | null = null;
-}
+// export class FileEntity {
+//     fileName: string = ""
+//     filePath: string = ""
+//     isDirectory: boolean = false
+//     isDisk: boolean = false
+//     readonly isFile: boolean = !this.isDirectory && !this.isDisk
+//     tagIds: string[] = []
+//     size: number = 0
+//     lastUpdateTime: Date | null = null;
+//     createTime: Date | null = null;
+// }
 
 class FileApi extends Api<FileEntity> {
     path: string = '/file';

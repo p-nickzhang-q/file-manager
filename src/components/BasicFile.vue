@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
-import {FileEntity} from "../api/fileApi";
 import BasicFileIcon from "./BasicFileIcon.vue";
+import {FileEntity} from "zhangyida-tools";
 
 withDefaults(defineProps<{
   file?: FileEntity

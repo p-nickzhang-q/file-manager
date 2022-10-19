@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {Folder, Document, Box} from '@element-plus/icons-vue'
-import {FileEntity} from "../api/fileApi";
+import {FileEntity} from "zhangyida-tools";
 defineProps({
   file: FileEntity
 });
@@ -8,8 +8,8 @@ defineProps({
 
 <template>
   <el-icon :size="30">
-    <box v-if="file.isDisk"/>
-    <folder v-else-if="file.isDirectory"/>
+    <box v-if="file.isDisk()"/>
+    <folder v-else-if="file.isDirectory()"/>
     <document v-else/>
   </el-icon>
 </template>

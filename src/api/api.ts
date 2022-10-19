@@ -1,5 +1,4 @@
 import axios, {Method} from "axios";
-import {FileEntity} from "./fileApi";
 import {errorMessage} from "../util/common";
 
 export const axiosInstance = axios.create({

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import {FileEntity} from "../../api/fileApi";
 import FileTagsSelect from "./FileTagsSelect.vue";
 import {TagApiInstance, TagFileApiInstance, TagFileEntity} from "../../api/tagApi";
 import {ref, watchEffect} from "vue";
 import useTag from "../../hooks/useTag";
 import {errorMessage, message} from "../../util/common";
+import {FileEntity} from "zhangyida-tools";
 
 const props = defineProps<{
   value: FileEntity

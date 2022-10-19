@@ -27,7 +27,7 @@ export function deepCopy<T>(data: T): T {
 
 export function getTabNameByFilePath(filePath?: string) {
     if (filePath) {
-        const split = filePath.split("/");
+        const split = filePath.split("/").filter(Boolean);
         return split[split.length - 1]
     } else {
         return defaultTabTitle

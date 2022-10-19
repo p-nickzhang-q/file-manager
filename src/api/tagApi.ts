@@ -1,5 +1,5 @@
 import {Api} from "./api";
-import {FileEntity} from "./fileApi";
+import {FileEntity} from "zhangyida-tools";
 
 export class TagEntity {
     id: string

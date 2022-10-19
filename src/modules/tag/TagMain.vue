@@ -6,13 +6,14 @@ import BasicFile from "../../components/BasicFile.vue";
 import BasicFileIcon from "../../components/BasicFileIcon.vue";
 import FileDetail from "../file/FileDetail.vue";
 import {useDelete} from "../../hooks/useFile";
-import {FileApiInstance, FileEntity} from "../../api/fileApi";
+import {FileApiInstance} from "../../api/fileApi";
 import BasicDialog from "../../components/BasicDialog.vue";
 import FileTree from "../file/FileTree.vue";
 import {useRename} from "../file/useRename";
 import {useMove} from "../file/useMove";
 import {useCopy} from "../file/useCopy";
 import TagManage from "./TagManage.vue";
+import {FileEntity} from "zhangyida-tools";
 
 const currentFile = ref<FileEntity>(new FileEntity())
 const tagIds = ref<string[]>([]);
@@ -35,7 +36,7 @@ const {newName, handleRename, openRename, renameDialog} = useRename({getData: on
 const {onMoveTreeNodeClick, handleMove, openMove, moveDialog} = useMove({getData: onSearch, currentPath: ref("")});
 const {handleCopy, onCopyTreeNodeClick, openCopy, copyDialog} = useCopy({getData: onSearch, currentPath: ref("")});
 const handleOpen = async (file: FileEntity) => {
-  if (file.isFile) {
+  if (file.isFile()) {
     await FileApiInstance.open(file.filePath)
   } else {
     await emits('openNewTap', file.filePath)

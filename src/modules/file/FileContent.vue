@@ -2,11 +2,9 @@
 import {reactive, ref} from "vue";
 import {Folder, Document, Box, Search} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
-import {FileApiInstance, FileEntity} from "../../api/fileApi";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
 import {useDelete, useFile} from "../../hooks/useFile";
 import FileDetail from "./FileDetail.vue";
-import useMouseOptions from "../../hooks/useMouseOptions";
 import BasicDialog from "../../components/BasicDialog.vue";
 import {confirm, errorMessage} from "../../util/common";
 import {useRename} from "./useRename";
@@ -14,6 +12,8 @@ import FileTree from "./FileTree.vue";
 import {useMove} from "./useMove";
 import {useCopy} from "./useCopy";
 import BasicScrollbar from "../../components/BasicScrollbar.vue";
+import {FileEntity} from "zhangyida-tools";
+import {popup, useMouseOptions} from "../../hooks/useMouseOptions";
 
 const props = defineProps<{
   tab: string,
@@ -41,31 +41,43 @@ const {moveDialog, onMoveTreeNodeClick, handleMove, openMove} = useMove({getData
 const {copyDialog, handleCopy, onCopyTreeNodeClick, openCopy} = useCopy({getData, currentPath});
 
 
-const {getMouseOptions} = useMouseOptions<FileEntity>([
-  {
-    label: "重命名",
-    fn: openRename
-  },
-  {
-    label: "移动",
-    fn: openMove
-  },
-  {
-    label: "复制",
-    fn: openCopy
-  },
-  {
-    label: "删除",
-    fn: handleDelete
-  },
-  {
-    label: "新标签打开",
-    fn: t => {
-      emits('openNewTap', t.filePath)
-    }
-  }
+// const {getMouseOptions} = useMouseOptions<FileEntity>([
+//   {
+//     label: "重命名",
+//     fn: openRename
+//   },
+//   {
+//     label: "移动",
+//     fn: openMove
+//   },
+//   {
+//     label: "复制",
+//     fn: openCopy
+//   },
+//   {
+//     label: "删除",
+//     fn: handleDelete
+//   },
+//   {
+//     label: "新标签打开",
+//     fn: t => {
+//       emits('openNewTap', t.filePath)
+//     }
+//   }
+// ]);
+const menu = useMouseOptions([
+  {label: '重命名'},
+  {label: '复制'},
+  {label: '粘贴'},
+  {label: '删除'},
+  {label: '新标签打开'},
 ]);
 
+const handleFileContentMenu = (item: FileEntity) => {
+  if (!item.isDisk()) {
+    popup(menu)
+  }
+}
 
 getData(props.path)
 
@@ -80,9 +92,9 @@ getData(props.path)
         <div>
           <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
             <BasicFile style="width: 100%;" :file="item"
-                       v-mouse-menu="getMouseOptions(item)"
+                       @contextmenu.prevent="handleFileContentMenu(item)"
                        @click="onViewDetail(item)"
-                       @dblclick="onGoTo(item.filePath,false,!item.isDisk && !item.isDirectory)">
+                       @dblclick="onGoTo(item.filePath,false,!item.isDisk() && !item.isDirectory())">
             </BasicFile>
           </el-row>
         </div>

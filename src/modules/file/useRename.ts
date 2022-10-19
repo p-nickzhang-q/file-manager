@@ -1,8 +1,7 @@
 import {ref} from "vue";
-import {FileApiInstance, FileEntity} from "../../api/fileApi";
-import useMouseOptions from "../../hooks/useMouseOptions";
-import {Ref} from "@vue/reactivity";
+import {FileApiInstance} from "../../api/fileApi";
 import {MouseOptionParam} from "../../util/common";
+import {FileEntity} from "zhangyida-tools";
 
 export const useRename = ({getData, currentPath}: MouseOptionParam ) => {
     const renameDialog: any = ref(null);

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import type Node from 'element-plus/es/components/tree/src/model/node'
-import {FileApiInstance, FileEntity} from "../../api/fileApi";
+import {FileApiInstance} from "../../api/fileApi";
 import {onMounted, ref} from "vue";
+import {fetchWithDisk} from "../../api/file";
+import {FileEntity} from "zhangyida-tools";
 
 const props = {
   label: 'fileName',
@@ -11,7 +13,7 @@ const props = {
 
 const loadNode = async (node: Node, resolve: (data: FileEntity[]) => void) => {
   const filePath = node.data.filePath;
-  const fileEntities = await FileApiInstance.fetch(filePath, true);
+  const fileEntities = await fetchWithDisk(filePath, true);
   resolve(fileEntities);
 }
 

@@ -1,6 +1,7 @@
 import {ref} from "vue";
-import {FileApiInstance, FileEntity} from "../../api/fileApi";
+import {FileApiInstance} from "../../api/fileApi";
 import {MouseOptionParam} from "../../util/common";
+import {FileEntity} from "zhangyida-tools";
 
 export const useMove = ({getData, currentPath}: MouseOptionParam) => {
     const moveDialog = ref<any>();
