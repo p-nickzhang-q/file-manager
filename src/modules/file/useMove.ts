@@ -1,23 +1,22 @@
 import {ref} from "vue";
-import {FileApiInstance} from "../../api/fileApi";
 import {MouseOptionParam} from "../../util/common";
 import {FileEntity} from "zhangyida-tools";
 
+const {dialog} = require("@electron/remote");
+
 export const useMove = ({getData, currentPath}: MouseOptionParam) => {
-    const moveDialog = ref<any>();
     const moveFile = ref<FileEntity>();
-    const newFolderPath = ref<string>();
-    const onMoveTreeNodeClick = (file: FileEntity) => {
-        newFolderPath.value = file.filePath
-    }
-    const handleMove = async () => {
-        await FileApiInstance.move(moveFile.value!, newFolderPath.value!)
-        await getData(currentPath.value)
-        moveDialog.value.close()
-    }
-    const openMove = (t: FileEntity) => {
-        moveDialog.value.open()
-        moveFile.value = t
+    const openMove = async (t: FileEntity) => {
+        const strings = dialog.showOpenDialogSync({
+            title: "移动",
+            properties: ["openDirectory"],
+            buttonLabel: '选择'
+        });
+        if (strings) {
+            moveFile.value = t
+            moveFile.value?.move(strings[0])
+            await getData(currentPath.value)
+        }
     };
-    return {moveDialog, moveFile, onMoveTreeNodeClick, handleMove, openMove};
+    return {moveFile, openMove};
 };

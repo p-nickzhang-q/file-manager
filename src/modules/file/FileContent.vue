@@ -13,7 +13,7 @@ import {useMove} from "./useMove";
 import {useCopy} from "./useCopy";
 import BasicScrollbar from "../../components/BasicScrollbar.vue";
 import {FileEntity} from "zhangyida-tools";
-import {popup, useMouseOptions} from "../../hooks/useMouseOptions";
+import useMenu from "../../hooks/useMenu";
 
 const props = defineProps<{
   tab: string,
@@ -36,9 +36,9 @@ const {
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
 
-const {moveDialog, onMoveTreeNodeClick, handleMove, openMove} = useMove({getData, currentPath});
+const {openMove} = useMove({getData, currentPath});
 
-const {copyDialog, handleCopy, onCopyTreeNodeClick, openCopy} = useCopy({getData, currentPath});
+const {openCopy} = useCopy({getData, currentPath});
 
 
 // const {getMouseOptions} = useMouseOptions<FileEntity>([
@@ -65,17 +65,13 @@ const {copyDialog, handleCopy, onCopyTreeNodeClick, openCopy} = useCopy({getData
 //     }
 //   }
 // ]);
-const menu = useMouseOptions([
-  {label: '重命名'},
-  {label: '复制'},
-  {label: '粘贴'},
-  {label: '删除'},
-  {label: '新标签打开'},
-]);
+const {buildMouseMenu, popup} = useMenu();
+
+const menu = buildMouseMenu({openRename, openMove, openCopy});
 
 const handleFileContentMenu = (item: FileEntity) => {
   if (!item.isDisk()) {
-    popup(menu)
+    popup(menu, item)
   }
 }
 
@@ -94,7 +90,7 @@ getData(props.path)
             <BasicFile style="width: 100%;" :file="item"
                        @contextmenu.prevent="handleFileContentMenu(item)"
                        @click="onViewDetail(item)"
-                       @dblclick="onGoTo(item.filePath,false,!item.isDisk() && !item.isDirectory())">
+                       @dblclick="onGoTo(item.filePath,false)">
             </BasicFile>
           </el-row>
         </div>
@@ -123,18 +119,7 @@ getData(props.path)
       <el-button @click="handleRename">确认</el-button>
     </template>
   </BasicDialog>
-  <BasicDialog title="移动" ref="moveDialog">
-    <FileTree @onNodeClick="onMoveTreeNodeClick"/>
-    <template #button>
-      <el-button @click="handleMove">确认</el-button>
-    </template>
-  </BasicDialog>
-  <BasicDialog title="复制" ref="copyDialog">
-    <FileTree @onNodeClick="onCopyTreeNodeClick"/>
-    <template #button>
-      <el-button @click="handleCopy">确认</el-button>
-    </template>
-  </BasicDialog>
+
 </template>
 
 <style scoped>

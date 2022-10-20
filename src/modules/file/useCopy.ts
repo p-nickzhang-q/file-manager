@@ -1,24 +1,24 @@
 import {ref} from "vue";
-import {FileApiInstance} from "../../api/fileApi";
 import {MouseOptionParam} from "../../util/common";
 import {FileEntity} from "zhangyida-tools";
 
-export const useCopy = ({getData, currentPath}: MouseOptionParam) => {
-    const copyDialog = ref<any>();
-    const copyFile = ref<FileEntity>();
-    const newFolderPath = ref<string>();
-    const handleCopy = async () => {
-        await FileApiInstance.copy(copyFile.value!, newFolderPath.value!)
-        await getData(currentPath.value)
-        copyDialog.value.close()
-    }
+const {dialog} = require("@electron/remote");
 
-    const onCopyTreeNodeClick = (file: FileEntity) => {
-        newFolderPath.value = file.filePath
-    }
-    const openCopy = (t: FileEntity) => {
-        copyDialog.value.open()
-        copyFile.value = t
+export const useCopy = ({getData, currentPath}: MouseOptionParam) => {
+    const copyFile = ref<FileEntity>();
+
+    const openCopy = async (t: FileEntity) => {
+        const strings = dialog.showOpenDialogSync({
+            title: "复制",
+            properties: ["openDirectory"],
+            buttonLabel: '选择'
+        });
+        if (strings) {
+            copyFile.value = t
+            copyFile.value?.copy(strings[0])
+            await getData(currentPath.value)
+        }
+
     };
-    return {copyDialog, copyFile, handleCopy, onCopyTreeNodeClick, openCopy};
+    return {copyFile, openCopy};
 }

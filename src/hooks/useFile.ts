@@ -2,6 +2,8 @@ import {computed, defineEmits, ref} from "vue";
 import {FileApiInstance} from "../api/fileApi";
 import {confirm, GetData} from "../util/common";
 import {FileEntity} from "zhangyida-tools";
+
+const {FileEntity: File} = require('zhangyida-tools');
 import {fetchWithDisk} from "../api/file";
 
 const map = new Map();
@@ -27,7 +29,6 @@ export function useFile(tabName: string, emits?: any) {
     }
 
     const getData = async (path?: string) => {
-        // items.value = await FileApiInstance.fetch(path);
         items.value = await fetchWithDisk(path)
         currentPath.value = path
     }
@@ -38,17 +39,18 @@ export function useFile(tabName: string, emits?: any) {
         }
     }
 
-    const onGoTo = async (filePath = "", fromBread = false, isDocument = false) => {
+    const onGoTo = async (filePath = '', fromBread = false) => {
         fileLoading.value = true
         if (fromBread) {
             const index = breads.value.indexOf(filePath) + 1;
             filePath = breads.value.slice(0, index).join('/');
         }
-        if (!isDocument) {
+        const file = File.of(filePath)
+        if (file.isFile()) {
+            await file.open()
+        } else {
             emitGoto(filePath);
             await getData(filePath)
-        } else {
-            await FileApiInstance.open(filePath)
         }
         currentFile.value = new FileEntity()
         fileLoading.value = false
