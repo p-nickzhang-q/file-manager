@@ -2,12 +2,11 @@ import {FileEntity} from "zhangyida-tools";
 
 const {BrowserWindow, Menu} = require("@electron/remote");
 
-
 export default function () {
     const target = ref<FileEntity>();
 
     // @ts-ignore
-    const buildMouseMenu = ({openRename, openMove, openCopy}) => {
+    const buildMouseMenu = ({openRename, openMove, openCopy, handleDelete, openNewTap}) => {
         return Menu.buildFromTemplate([
             {
                 label: '重命名', click() {
@@ -24,14 +23,25 @@ export default function () {
                     openCopy(target.value)
                 }
             },
-            {label: '删除'},
-            {label: '新标签打开'},
+            {
+                label: '删除', click() {
+                    handleDelete(target.value)
+                }
+            },
+            {
+                label: '新标签打开', id: "openNewTab", click() {
+                    openNewTap(target.value)
+                }
+            },
         ]);
     };
 
     // @ts-ignore
     const popup = (menu: Menu, item: FileEntity) => {
         target.value = item
+        const menuItem = menu.getMenuItemById('openNewTab');
+        console.log(menuItem)
+        menuItem.visible = !item.isFile();
         menu.popup({
             // @ts-ignore
             window: BrowserWindow.getFocusedWindow()

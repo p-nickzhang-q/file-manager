@@ -67,7 +67,11 @@ const {openCopy} = useCopy({getData, currentPath});
 // ]);
 const {buildMouseMenu, popup} = useMenu();
 
-const menu = buildMouseMenu({openRename, openMove, openCopy});
+const menu = buildMouseMenu({
+  openRename, openMove, openCopy, handleDelete, openNewTap(item: FileEntity) {
+    emits('openNewTap', item.filePath)
+  }
+});
 
 const handleFileContentMenu = (item: FileEntity) => {
   if (!item.isDisk()) {
