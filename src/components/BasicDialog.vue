@@ -31,6 +31,7 @@ defineExpose({
       :width="props.width"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
+      draggable
       append-to-body
   >
     <slot></slot>

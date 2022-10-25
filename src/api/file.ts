@@ -30,8 +30,12 @@ function getLevel(path: string) {
     return path.split("/").filter(Boolean).length;
 }
 
-function getDbData() {
+export function getDbData() {
     return DATA_JSON_ENTITY.json() || [];
+}
+
+export function getDbTag() {
+    return TAG_DATA_ENTITY.json() || []
 }
 
 function syncDbData(actual: any[], path: string) {

@@ -1,13 +1,12 @@
 <script lang="ts" setup>
 import useTag from "../../hooks/useTag";
-import {TagApiInstance, TagEntity} from "../../api/tagApi";
-import {confirm, deepCopy, message} from "../../util/common";
+import {confirm, message} from "../../util/common";
 import {useHeight} from "../../hooks/useHeight";
 
-const tableData = ref<TagEntity[]>([]);
-const getTags = async () => {
-  tableData.value = await TagApiInstance.fetch();
-  for (let i = 0; i < tableData.value.length; i++) {
+const {getTags: getSelectTags, tagOptions, syncTagData} = useTag();
+const getTags = () => {
+  getSelectTags();
+  for (let i = 0; i < tagOptions.value.length; i++) {
     editMap.value.set(i, {edit: false})
   }
 }
@@ -19,29 +18,28 @@ defineExpose({
 
 type RowConfig = {
   edit: boolean,
-  editTempData?: TagEntity
+  tag?: string
 }
 const editMap = ref(new Map<number, RowConfig>([]));
 
-const {getTags: getSelectTags} = useTag();
 
-const onEdit = (index: number, row: TagEntity) => {
+const onEdit = (index: number) => {
   let config = editMap.value.get(index);
   if (!config) {
     config = {edit: false}
     editMap.value.set(index, config)
   }
   config.edit = true
-  config.editTempData = deepCopy(row)
+  config.tag = tagOptions.value[index]
 }
 
-const save = async (index: number) => {
+const save = (index: number) => {
   const config = editMap.value.get(index)!;
-  await TagApiInstance.save(config.editTempData!);
   config.edit = false;
+  // @ts-ignore
+  tagOptions.value[index] = config.tag
+  syncTagData()
   message()
-  await getSelectTags()
-  await getTags()
 }
 
 const cancel = (index: number) => {
@@ -52,12 +50,11 @@ const isEdit = (i: number) => {
   return editMap.value.get(i)!.edit
 }
 
-const onDelete = async (row: TagEntity) => {
+const onDelete = async (i: number) => {
   await confirm("确认删除吗")
-  await TagApiInstance.remove(row.id);
+  tagOptions.value.splice(i, 1)
+  syncTagData()
   message();
-  await getSelectTags()
-  await getTags()
 }
 
 const {height} = useHeight();
@@ -65,7 +62,7 @@ const {height} = useHeight();
 </script>
 
 <template>
-  <el-table :max-height="height" :data="tableData" border style="width: 100%">
+  <el-table :max-height="height" :data="tagOptions" border style="width: 100%">
     <el-table-column label="操作">
       <template #default="{row,$index}">
         <div v-if="isEdit($index)">
@@ -73,15 +70,15 @@ const {height} = useHeight();
           <el-button type="text" @click="cancel($index)">取消</el-button>
         </div>
         <div v-else>
-          <el-button type="text" @click="onEdit($index,row)">编辑</el-button>
-          <el-button type="text" @click="onDelete(row)">删除</el-button>
+          <el-button type="text" @click="onEdit($index)">编辑</el-button>
+          <el-button type="text" @click="onDelete($index)">删除</el-button>
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="value" label="标签" align="center">
+    <el-table-column prop="tag" label="标签" align="center">
       <template #default="{row,$index}">
-        <el-input v-if="isEdit($index)" v-model="editMap.get($index).editTempData.value"/>
-        <span v-else>{{ row.value }}</span>
+        <el-input v-if="isEdit($index)" v-model="editMap.get($index).tag"/>
+        <span v-else>{{ row }}</span>
       </template>
     </el-table-column>
   </el-table>

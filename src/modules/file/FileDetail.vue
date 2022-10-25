@@ -17,7 +17,7 @@ watchEffect(() => {
 });
 
 const emits = defineEmits(["success"]);
-const {getTags} = useTag();
+const {ifNewTagThenAdd, getTags} = useTag();
 
 const onSave = async () => {
   if (!sourceValue.value.filePath) {
@@ -27,8 +27,8 @@ const onSave = async () => {
   updateFileEntity(sourceValue.value, file => {
     // @ts-ignore
     file.tag = sourceValue.value.tag
+    ifNewTagThenAdd(file.tag)
   })
-  // await getTags()
   message()
   emits("success")
 }
