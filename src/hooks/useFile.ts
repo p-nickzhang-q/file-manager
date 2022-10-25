@@ -1,5 +1,4 @@
 import {computed, defineEmits, ref} from "vue";
-import {FileApiInstance} from "../api/fileApi";
 import {confirm, GetData} from "../util/common";
 import {FileEntity} from "zhangyida-tools";
 
@@ -65,7 +64,7 @@ export function useFile(tabName: string, emits?: any) {
 
     const onSearch = async () => {
         fileLoading.value = true
-        items.value = await FileApiInstance.search(searchValue.value, currentPath.value);
+        // items.value = await FileApiInstance.search(searchValue.value, currentPath.value);
         fileLoading.value = false
     }
 

@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import FileTagsSelect from "../file/FileTagsSelect.vue";
 import {ref} from "vue";
-import {TagFileApiInstance, TagFileEntity} from "../../api/tagApi";
 import BasicFile from "../../components/BasicFile.vue";
 import BasicFileIcon from "../../components/BasicFileIcon.vue";
 import FileDetail from "../file/FileDetail.vue";
 import {useDelete} from "../../hooks/useFile";
-import {FileApiInstance} from "../../api/fileApi";
 import BasicDialog from "../../components/BasicDialog.vue";
 import FileTree from "../file/FileTree.vue";
 import {useRename} from "../file/useRename";
@@ -17,27 +15,27 @@ import {FileEntity} from "zhangyida-tools";
 
 const currentFile = ref<FileEntity>(new FileEntity())
 const tagIds = ref<string[]>([]);
-const content = ref<TagFileEntity[]>([]);
+const content = ref<string[]>([]);
 const loading = ref(false);
 const onSearch = async () => {
   if (tagIds.value.length > 0) {
     loading.value = true;
-    content.value = await TagFileApiInstance.fetch(tagIds.value);
+    // content.value = await TagFileApiInstance.fetch(tagIds.value);
     loading.value = false
   }
 }
-const onViewDetail = (row: TagFileEntity) => {
+const onViewDetail = (row: any) => {
   row.file.tagIds = row.tagIds;
   currentFile.value = row.file;
 }
 const emits = defineEmits(["openNewTap"]);
 const {handleDelete} = useDelete(() => onSearch());
 const {newName, handleRename, openRename, renameDialog} = useRename({getData: onSearch, currentPath: ref("")});
-const {onMoveTreeNodeClick, handleMove, openMove, moveDialog} = useMove({getData: onSearch, currentPath: ref("")});
-const {handleCopy, onCopyTreeNodeClick, openCopy, copyDialog} = useCopy({getData: onSearch, currentPath: ref("")});
+const {openMove} = useMove({getData: onSearch, currentPath: ref("")});
+const {openCopy} = useCopy({getData: onSearch, currentPath: ref("")});
 const handleOpen = async (file: FileEntity) => {
   if (file.isFile()) {
-    await FileApiInstance.open(file.filePath)
+    // await FileApiInstance.open(file.filePath)
   } else {
     await emits('openNewTap', file.filePath)
   }
