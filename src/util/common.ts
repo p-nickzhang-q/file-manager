@@ -96,3 +96,14 @@ export function sum(arr: any[], sumPropertyName: string) {
     }, 0)
 }
 
+export function longTimeFormat(time: number) {
+    if (!time) {
+        return ''
+    }
+    const date = new Date(time);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+}
+
+export function toWindowPath(path: string) {
+    return path.replace(/\//g, "\\");
+}

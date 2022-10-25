@@ -1,12 +1,12 @@
 import {ref} from "vue";
-import {TagApiInstance, TagEntity} from "../api/tagApi";
+import {TAG_DATA_ENTITY} from "../api/file";
 
-const tagOptions = ref<TagEntity[]>([]);
+const tagOptions = ref<string[]>([]);
 
 export default function () {
 
     const getTags = async () => {
-        tagOptions.value = await TagApiInstance.fetch();
+        tagOptions.value = TAG_DATA_ENTITY.json();
     }
 
     return {

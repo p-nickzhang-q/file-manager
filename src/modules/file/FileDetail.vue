@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import FileTagsSelect from "./FileTagsSelect.vue";
-import {TagApiInstance, TagFileApiInstance, TagFileEntity} from "../../api/tagApi";
 import {ref, watchEffect} from "vue";
 import useTag from "../../hooks/useTag";
-import {errorMessage, message} from "../../util/common";
+import {errorMessage, longTimeFormat, message} from "../../util/common";
 import {FileEntity} from "zhangyida-tools";
+import {updateFileEntity} from "../../api/file";
 
 const props = defineProps<{
   value: FileEntity
@@ -24,8 +24,11 @@ const onSave = async () => {
     errorMessage("未选择文件")
     return
   }
-  await TagFileApiInstance.save(new TagFileEntity(sourceValue.value.tagIds, sourceValue.value.filePath))
-  await getTags()
+  updateFileEntity(sourceValue.value, file => {
+    // @ts-ignore
+    file.tag = sourceValue.value.tag
+  })
+  // await getTags()
   message()
   emits("success")
 }
@@ -59,7 +62,7 @@ const showSize = computed(() => {
     </template>
     <el-form label-position="top" size="large">
       <el-form-item label="标签">
-        <FileTagsSelect v-model:value="sourceValue.tagIds"/>
+        <FileTagsSelect v-model:value="sourceValue.tag"/>
       </el-form-item>
       <el-form-item label="文件路径">
         {{ sourceValue.filePath }}
@@ -68,10 +71,10 @@ const showSize = computed(() => {
         {{ showSize }}
       </el-form-item>
       <el-form-item label="创建时间">
-        {{ sourceValue.createTime }}
+        {{ longTimeFormat(sourceValue.createTime) }}
       </el-form-item>
       <el-form-item label="更新时间">
-        {{ sourceValue.lastUpdateTime }}
+        {{ longTimeFormat(sourceValue.lastUpdateTime) }}
       </el-form-item>
     </el-form>
   </el-card>

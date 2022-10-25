@@ -40,7 +40,6 @@ export default function () {
     const popup = (menu: Menu, item: FileEntity) => {
         target.value = item
         const menuItem = menu.getMenuItemById('openNewTab');
-        console.log(menuItem)
         menuItem.visible = !item.isFile();
         menu.popup({
             // @ts-ignore

@@ -39,9 +39,9 @@ getTags()
   >
     <el-option
         v-for="item in tagOptions"
-        :key="item.id"
-        :label="item.value"
-        :value="item.id"
+        :key="item"
+        :label="item"
+        :value="item"
     >
     </el-option>
   </el-select>
