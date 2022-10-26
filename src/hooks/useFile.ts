@@ -1,4 +1,4 @@
-import {confirm, GetData} from "../util/common";
+import {confirm, GetData, isImage} from "../util/common";
 import {FileEntity} from "zhangyida-tools";
 
 const {FileEntity: File} = require('zhangyida-tools');
@@ -78,7 +78,7 @@ export function useFile(tabName: string, emits?: any) {
         onViewDetail,
         searchValue,
         onSearch,
-        emitGoto
+        emitGoto,
     };
 }
 

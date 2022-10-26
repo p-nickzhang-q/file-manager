@@ -42,6 +42,7 @@ export function getExtByFileName(fileName: string) {
 export const defaultTabTitle = '我的电脑';
 
 export type GetData = ((path?: string) => Promise<void>) | (() => Promise<void>);
+
 export type MouseOptionParam = {
     currentPath: Ref<string>
     getData: GetData,
@@ -106,4 +107,36 @@ export function longTimeFormat(time: number) {
 
 export function toWindowPath(path: string) {
     return path.replace(/\//g, "\\");
+}
+
+const imageExt = [
+    "bmp",
+    "jpg",
+    "png",
+    "tif",
+    "gif",
+    "pcx",
+    "tga",
+    "exif",
+    "fpx",
+    "svg",
+    "psd",
+    "cdr",
+    "pcd",
+    "dxf",
+    "ufo",
+    "eps",
+    "ai",
+    "raw",
+    "wmf",
+    "jpeg",
+]
+
+export function isImage(fileName: string) {
+    const ext = getExtByFileName(fileName);
+    const isImage = imageExt.includes(ext);
+    return {
+        isImage,
+        ext
+    }
 }

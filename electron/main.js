@@ -11,6 +11,7 @@ const createWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
+            webSecurity: false
         }
     });
     require('@electron/remote/main').initialize()
