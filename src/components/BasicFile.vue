@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
       <!--      <BasicFileIcon :file="file"/>-->
       <el-image v-if="isImage(file.fileName).isImage" :src="file.filePath" preview-teleported
                 :preview-src-list="[file.filePath]"
-                style="width: 10%; height: 5%" fit="cover"/>
+                style="width: 10%; height: 5%" fit="cover" lazy/>
       <BasicFileIcon v-else :file="file"/>
       <div>
         <span>{{ file.fileName }}</span>
