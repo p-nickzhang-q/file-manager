@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-
-// import {ref, watch, watchEffect} from 'vue'
 import useTag from "../../hooks/useTag";
 
 const props = defineProps<{
@@ -10,18 +8,14 @@ const props = defineProps<{
 
 const emits = defineEmits(['update:value']);
 
-const sourceValue = ref<string[]>([])
-
-watchEffect(() => {
-  sourceValue.value = props.value || [];
+const localValue = computed({
+  get() {
+    return props.value
+  },
+  set(value) {
+    emits('update:value', value);
+  }
 });
-
-watch(
-    () => sourceValue.value,
-    (v: string[]) => {
-      emits('update:value', v);
-    },
-);
 
 const {getTags, tagOptions} = useTag();
 
@@ -31,7 +25,7 @@ getTags()
 
 <template>
   <el-select
-      v-model="value"
+      v-model="localValue"
       multiple
       filterable
       allow-create

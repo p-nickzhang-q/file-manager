@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import FileTagsSelect from "../file/FileTagsSelect.vue";
-import {ref} from "vue";
 import BasicFile from "../../components/BasicFile.vue";
 import BasicFileIcon from "../../components/BasicFileIcon.vue";
 import FileDetail from "../file/FileDetail.vue";
@@ -20,7 +19,6 @@ const loading = ref(false);
 const onSearch = async () => {
   if (tagIds.value.length > 0) {
     loading.value = true;
-    // content.value = await TagFileApiInstance.fetch(tagIds.value);
     loading.value = false
   }
 }

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import {reactive, ref} from "vue";
 import {Folder, Document, Box, Search} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";

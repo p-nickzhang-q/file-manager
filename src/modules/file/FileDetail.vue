@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import FileTagsSelect from "./FileTagsSelect.vue";
-import {ref, watchEffect} from "vue";
 import useTag from "../../hooks/useTag";
 import {errorMessage, longTimeFormat, message} from "../../util/common";
 import {FileEntity} from "zhangyida-tools";

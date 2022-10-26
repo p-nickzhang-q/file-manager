@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import type Node from 'element-plus/es/components/tree/src/model/node'
-import {FileApiInstance} from "../../api/fileApi";
-import {onMounted, ref} from "vue";
 import {fetchWithDisk} from "../../api/file";
 import {FileEntity} from "zhangyida-tools";
 

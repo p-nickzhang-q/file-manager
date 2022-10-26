@@ -7,7 +7,7 @@
     "electron:build": "vite build && electron-builder",
     "electron": "wait-on tcp:3001 && cross-env NODE_ENV=development electron .",
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "build": {
