@@ -16,10 +16,12 @@ const createWindow = () => {
     });
     require('@electron/remote/main').initialize()
     require('@electron/remote/main').enable(win.webContents)
-    win.webContents.openDevTools()
-
+    const isDev = NODE_ENV === "development";
+    if (isDev) {
+        win.webContents.openDevTools()
+    }
     win.loadURL(
-        NODE_ENV === "development" ? "http://localhost:3001" : `file://${path.join(__dirname, '../dist/index.html')}`
+        isDev ? "http://localhost:3001" : `file://${path.join(__dirname, '../dist/index.html')}`
     );
     // win.loadURL("http://localhost:3000")
 };
