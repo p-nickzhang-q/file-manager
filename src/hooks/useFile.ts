@@ -4,11 +4,11 @@ import {allFiles, fetchWithDisk} from "../api/file";
 
 const {FileEntity: File} = require('zhangyida-tools');
 
-const map = new Map();
+export const DataMap = new Map();
 
 export function useFile(tabName: string, emits?: any) {
 
-    if (!map.has(tabName)) {
+    if (!DataMap.has(tabName)) {
         const items = ref<FileEntity[]>([]);
         const currentPath = ref('');
         const fileLoading = ref(false);
@@ -16,12 +16,12 @@ export function useFile(tabName: string, emits?: any) {
         const currentFile = ref(new FileEntity());
         const searchValue = ref<string>();
 
-        map.set(tabName, {
+        DataMap.set(tabName, {
             items, currentPath, fileLoading, currentFile, searchValue, searchMode
         })
     }
 
-    const {items, currentPath, fileLoading, currentFile, searchValue, searchMode} = map.get(tabName);
+    const {items, currentPath, fileLoading, currentFile, searchValue, searchMode} = DataMap.get(tabName);
 
     const onViewDetail = (item: any) => {
         currentFile.value = item

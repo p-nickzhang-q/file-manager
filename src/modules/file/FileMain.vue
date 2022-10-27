@@ -4,6 +4,7 @@
       type="card"
       editable
       @edit="handleTabsEdit"
+      @tab-remove="handleTabRemove"
   >
     <el-tab-pane
         v-for="item in editableTabs"
@@ -19,6 +20,7 @@
 import {ref} from 'vue'
 import FileContent from "./FileContent.vue";
 import {defaultTabTitle, getTabNameByFilePath} from "../../util/common";
+import {DataMap} from "../../hooks/useFile";
 
 let tabIndex = 0
 const editableTabsValue = ref('0')
@@ -71,6 +73,11 @@ const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
 
 const handleOpenNewTap = (path: string) => {
   addNewTab(path)
+}
+
+const handleTabRemove = (name: string) => {
+  DataMap.delete(name)
+  console.log(DataMap)
 }
 
 const onGoTo = (path: string, tabName: string) => {
