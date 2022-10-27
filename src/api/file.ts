@@ -1,9 +1,11 @@
-const {FileEntity} = require('zhangyida-tools');
+import {FileEntity} from "zhangyida-tools";
+
+const {FileEntity: File} = require('zhangyida-tools');
 
 
 function getDataJsonEntityWithDefault(path: string, jsonFileName: string, fileContent = "[]") {
-    return FileEntity.ofNullable(path, jsonFileName).orElse(() => {
-        return FileEntity.of(path).createFile(jsonFileName, fileContent);
+    return File.ofNullable(path, jsonFileName).orElse(() => {
+        return File.of(path).createFile(jsonFileName, fileContent);
     });
 }
 
@@ -11,8 +13,8 @@ const USER_HOME = process.env.HOME || process.env.USERPROFILE
 const TAG_DATA_FILE_NAME = "tagData.json";
 const TAG_FILE_NAME = 'tag.json';
 const CONFIG_DIR_NAME = "file_tag_config";
-const CONFIG_DIR = FileEntity.pathJoin(USER_HOME, CONFIG_DIR_NAME);
-FileEntity.ofNullable(CONFIG_DIR).orElse(() => FileEntity.of(FileEntity.getParentFolderPathByPath(CONFIG_DIR)).createChildFolder(CONFIG_DIR_NAME))
+const CONFIG_DIR = File.pathJoin(USER_HOME, CONFIG_DIR_NAME);
+File.ofNullable(CONFIG_DIR).orElse(() => File.of(File.getParentFolderPathByPath(CONFIG_DIR)).createChildFolder(CONFIG_DIR_NAME))
 export const DATA_JSON_ENTITY = getDataJsonEntityWithDefault(CONFIG_DIR, TAG_DATA_FILE_NAME);
 export const TAG_DATA_ENTITY = getDataJsonEntityWithDefault(CONFIG_DIR, TAG_FILE_NAME);
 
@@ -30,8 +32,12 @@ function getLevel(path: string) {
     return path.split("/").filter(Boolean).length;
 }
 
+export const allFiles = ref<FileEntity[]>([]);
+
 export function getDbData() {
-    return DATA_JSON_ENTITY.json() || [];
+    const object = DATA_JSON_ENTITY.json() || [];
+    allFiles.value = object;
+    return object;
 }
 
 export function getDbTag() {
@@ -76,7 +82,7 @@ export const updateFileEntity = (file: any, process: FileEntityProcess) => {
 }
 
 export const fetchWithDisk = async (path = "", isFolder?: boolean) => {
-    const actual = await FileEntity.fetchWithDisk(path, isFolder);
+    const actual = await File.fetchWithDisk(path, isFolder);
     syncDbData(actual, path);
     return actual
 }
@@ -91,12 +97,11 @@ function copy(element: any) {
     return JSON.parse(JSON.stringify(element));
 }
 
-export function syncDataJson(oldFilePath: string, newFileEntity = new FileEntity(), operation = OPERATION.RENAME) {
-    const dataJsonEntity = DATA_JSON_ENTITY
+export function syncDataJson(oldFilePath: string, newFileEntity = new File(), operation = OPERATION.RENAME) {
     const oldPathLevel = getLevel(oldFilePath);
     // @ts-ignore
     const childFilesPredicate = value => value.filePath.startsWith(oldFilePath) && getLevel(value.filePath) > oldPathLevel;
-    const dataJson = dataJsonEntity.json() || [];
+    const dataJson = getDbData();
     // @ts-ignore
     const findIndex = dataJson.findIndex(value => value.filePath === oldFilePath);
 
@@ -139,5 +144,5 @@ export function syncDataJson(oldFilePath: string, newFileEntity = new FileEntity
 
     map[operation]()
 
-    dataJsonEntity.writeJson(dataJson)
+    DATA_JSON_ENTITY.writeJson(dataJson)
 }

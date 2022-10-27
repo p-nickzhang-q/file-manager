@@ -1,8 +1,8 @@
-import {confirm, GetData, isImage} from "../util/common";
+import {confirm} from "../util/common";
 import {FileEntity} from "zhangyida-tools";
+import {allFiles, fetchWithDisk} from "../api/file";
 
 const {FileEntity: File} = require('zhangyida-tools');
-import {fetchWithDisk} from "../api/file";
 
 const map = new Map();
 
@@ -12,15 +12,16 @@ export function useFile(tabName: string, emits?: any) {
         const items = ref<FileEntity[]>([]);
         const currentPath = ref('');
         const fileLoading = ref(false);
+        const searchMode = ref(false);
         const currentFile = ref(new FileEntity());
         const searchValue = ref<string>();
 
         map.set(tabName, {
-            items, currentPath, fileLoading, currentFile, searchValue
+            items, currentPath, fileLoading, currentFile, searchValue, searchMode
         })
     }
 
-    const {items, currentPath, fileLoading, currentFile, searchValue} = map.get(tabName);
+    const {items, currentPath, fileLoading, currentFile, searchValue, searchMode} = map.get(tabName);
 
     const onViewDetail = (item: any) => {
         currentFile.value = item
@@ -63,7 +64,16 @@ export function useFile(tabName: string, emits?: any) {
 
     const onSearch = async () => {
         fileLoading.value = true
-        // items.value = await FileApiInstance.search(searchValue.value, currentPath.value);
+        if (searchValue.value) {
+            items.value = allFiles.value.filter(i => {
+                // @ts-ignore
+                return i.fileName.includes(searchValue.value) || i.tag.some(tag => tag.includes(searchValue.value))
+            }).map(i => File.ofJson(i))
+            searchMode.value = true
+        } else {
+            await getData(currentPath.value)
+            searchMode.value = false
+        }
         fileLoading.value = false
     }
 
@@ -79,6 +89,7 @@ export function useFile(tabName: string, emits?: any) {
         searchValue,
         onSearch,
         emitGoto,
+        searchMode
     };
 }
 

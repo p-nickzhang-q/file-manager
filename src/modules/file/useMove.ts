@@ -7,9 +7,10 @@ const {dialog} = require("@electron/remote");
 export const useMove = ({getData, currentPath}: MouseOptionParam) => {
     const moveFile = ref<FileEntity>();
     const openMove = async (t: FileEntity) => {
+        const defaultPath = toWindowPath(t.getParentFolderPath());
         const strings = dialog.showOpenDialogSync({
             title: "移动",
-            defaultPath: toWindowPath(t.getParentFolderPath()),
+            defaultPath,
             properties: ["openDirectory"],
             buttonLabel: '选择'
         });

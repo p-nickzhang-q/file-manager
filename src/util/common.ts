@@ -106,7 +106,11 @@ export function longTimeFormat(time: number) {
 }
 
 export function toWindowPath(path: string) {
-    return path.replace(/\//g, "\\");
+    let s = path.replace(/\//g, "\\");
+    if (s.endsWith(":")) {
+        s += '\\';
+    }
+    return s;
 }
 
 const imageExt = [
