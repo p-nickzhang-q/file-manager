@@ -8,11 +8,15 @@ const props = withDefaults(defineProps<{
   file?: FileEntity
 }>(), {});
 
+const shadow = computed(() => {
+  // @ts-ignore
+  return props.file.selected ? 'always' : 'hover'
+});
 
 </script>
 
 <template>
-  <el-card shadow="hover">
+  <el-card :shadow="shadow" :class="{'selected':file.selected}">
     <slot>
       <!--      <BasicFileIcon :file="file"/>-->
       <el-image v-if="isImage(file.fileName).isImage" :src="file.filePath" preview-teleported
@@ -27,5 +31,7 @@ const props = withDefaults(defineProps<{
 </template>
 
 <style scoped>
-
+.selected {
+  background: #d9d9d9;
+}
 </style>

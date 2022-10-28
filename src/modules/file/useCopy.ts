@@ -5,23 +5,29 @@ import {OPERATION, syncDataJson} from "../../api/file";
 const {dialog} = require("@electron/remote");
 
 export const useCopy = ({getData, currentPath}: MouseOptionParam) => {
-    const copyFile = ref<FileEntity>();
 
-    const openCopy = async (t: FileEntity) => {
+    const openCopy = async (t: FileEntity[]) => {
+        let defaultPath: string;
+        if (t.length === 1) {
+            defaultPath = toWindowPath(t[0].getParentFolderPath());
+        }
+
         const strings = dialog.showOpenDialogSync({
             title: "复制",
-            defaultPath: toWindowPath(t.getParentFolderPath()),
+            // @ts-ignore
+            defaultPath,
             properties: ["openDirectory"],
             buttonLabel: '选择'
         });
         if (strings) {
-            const oldPath = t.filePath;
-            copyFile.value = t
-            copyFile.value?.copy(strings[0])
-            syncDataJson(oldPath, copyFile.value, OPERATION.COPY)
+            for (let fileEntity of t) {
+                const oldPath = fileEntity.filePath;
+                fileEntity.copy(strings[0])
+                syncDataJson(oldPath, fileEntity, OPERATION.COPY)
+            }
             await getData(currentPath.value)
         }
 
     };
-    return {copyFile, openCopy};
+    return {openCopy};
 }

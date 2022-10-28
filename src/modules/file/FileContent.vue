@@ -2,7 +2,7 @@
 import {Search} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
-import {useDelete, useFile} from "../../hooks/useFile";
+import {isShift, isCtrl, useDelete, useFile} from "../../hooks/useFile";
 import FileDetail from "./FileDetail.vue";
 import BasicDialog from "../../components/BasicDialog.vue";
 import {useRename} from "./useRename";
@@ -30,6 +30,7 @@ const {
   onSearch,
   emitGoto,
   searchMode,
+  selectedFiles
 } = useFile(props.tab!, emits);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
@@ -41,15 +42,15 @@ const {openCopy} = useCopy({getData, currentPath});
 const {buildMouseMenu, popup} = useMenu();
 
 const menu = buildMouseMenu({
-  openRename, openMove, openCopy, handleDelete, openNewTap(item: FileEntity) {
-    emits('openNewTap', item.filePath)
+  openRename, openMove, openCopy, handleDelete, openNewTap(items: FileEntity[]) {
+    for (let item of items) {
+      emits('openNewTap', item.filePath)
+    }
   }
 });
 
 const handleFileContentMenu = (item: FileEntity) => {
-  if (!item.isDisk()) {
-    popup(menu, item)
-  }
+  popup(menu, item, selectedFiles.value)
 }
 
 getData(props.path)
@@ -64,10 +65,11 @@ getData(props.path)
     <el-col :span="16" v-loading="fileLoading">
       <BasicScrollbar>
         <div>
+         shift: {{ isShift }} ctrl: {{ isCtrl }}
           <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
             <BasicFile style="width: 100%;" :file="item"
                        @contextmenu.prevent="handleFileContentMenu(item)"
-                       @click.prevent="onViewDetail(item)"
+                       @click.prevent="onViewDetail(item,i)"
                        @dblclick.prevent="onGoTo(item.filePath,false)">
             </BasicFile>
           </el-row>

@@ -1,6 +1,6 @@
 <template>
   <el-tabs
-      v-model="editableTabsValue"
+      v-model="currentTab"
       type="card"
       editable
       @edit="handleTabsEdit"
@@ -20,10 +20,9 @@
 import {ref} from 'vue'
 import FileContent from "./FileContent.vue";
 import {defaultTabTitle, getTabNameByFilePath} from "../../util/common";
-import {DataMap} from "../../hooks/useFile";
+import {DataMap, currentTab} from "../../hooks/useFile";
 
 let tabIndex = 0
-const editableTabsValue = ref('0')
 
 interface Tab {
   title: string;
@@ -46,7 +45,7 @@ function addNewTab(path?: string) {
     name: newTabName,
     path
   })
-  editableTabsValue.value = newTabName
+  currentTab.value = newTabName
 }
 
 const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
@@ -54,7 +53,7 @@ const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
     addNewTab();
   } else if (action === 'remove') {
     const tabs = editableTabs.value
-    let activeName = editableTabsValue.value
+    let activeName = currentTab.value
     if (activeName === targetName) {
       tabs.forEach((tab, index) => {
         if (tab.name === targetName) {
@@ -66,7 +65,7 @@ const handleTabsEdit = (targetName: string, action: 'remove' | 'add') => {
       })
     }
 
-    editableTabsValue.value = activeName
+    currentTab.value = activeName
     editableTabs.value = tabs.filter((tab) => tab.name !== targetName)
   }
 }

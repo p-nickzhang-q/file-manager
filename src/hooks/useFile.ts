@@ -6,6 +6,37 @@ const {FileEntity: File} = require('zhangyida-tools');
 
 export const DataMap = new Map();
 
+export const isShift = ref(false);
+export const isCtrl = ref(false);
+let LastShiftIndex: number;
+const Shift = 'Shift'
+const Control = 'Control'
+export const currentTab = ref('0')
+
+document.addEventListener("keyup", ev => {
+    ev.preventDefault()
+    //Shift Control
+    if (ev.key === Shift) {
+        isShift.value = false
+    } else if (ev.key === Control) {
+        isCtrl.value = false
+    } else if (ev.key === 'a' && ev.ctrlKey) {
+        const {items} = DataMap.get(currentTab.value);
+        for (let file of items.value) {
+            file.selected = true
+        }
+    }
+})
+
+document.addEventListener("keydown", ev => {
+    ev.preventDefault()
+    if (ev.key === Shift) {
+        isShift.value = true
+    } else if (ev.key === Control) {
+        isCtrl.value = true
+    }
+})
+
 export function useFile(tabName: string, emits?: any) {
 
     if (!DataMap.has(tabName)) {
@@ -23,7 +54,32 @@ export function useFile(tabName: string, emits?: any) {
 
     const {items, currentPath, fileLoading, currentFile, searchValue, searchMode} = DataMap.get(tabName);
 
-    const onViewDetail = (item: any) => {
+    const onViewDetail = (item: any, i: number) => {
+        function clearSelected() {
+            // @ts-ignore
+            items.value.forEach(i => i.selected = false)
+        }
+
+        if (isShift.value) {
+            clearSelected();
+            // @ts-ignore
+            items.value.filter((v, index) => {
+                if (LastShiftIndex < i) {
+                    return index >= LastShiftIndex && index <= i
+                } else {
+                    return index >= i && index <= LastShiftIndex
+                }
+                // @ts-ignore
+            }).forEach(v => {
+                v.selected = true
+            })
+        } else if (isCtrl.value) {
+            item.selected = !item.selected
+        } else {
+            clearSelected();
+            item.selected = !item.selected
+            LastShiftIndex = i;
+        }
         currentFile.value = item
     }
 
@@ -77,6 +133,11 @@ export function useFile(tabName: string, emits?: any) {
         fileLoading.value = false
     }
 
+    const selectedFiles = computed(args => {
+        // @ts-ignore
+        return items.value.filter(i => i.selected)
+    });
+
     return {
         items,
         getData,
@@ -89,14 +150,17 @@ export function useFile(tabName: string, emits?: any) {
         searchValue,
         onSearch,
         emitGoto,
-        searchMode
+        searchMode,
+        selectedFiles,
     };
 }
 
 export function useDelete(getData: any) {
-    const handleDelete = async (t: FileEntity) => {
+    const handleDelete = async (t: FileEntity[]) => {
         await confirm("确认删除吗")
-        await t.remove()
+        for (let fileEntity of t) {
+            await fileEntity.remove()
+        }
         getData.call();
     };
     return {
