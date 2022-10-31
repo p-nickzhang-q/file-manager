@@ -21,6 +21,15 @@
     ],
     "win": {
       "icon": "./favicon_256.ico"
+    },
+    "nsis": {
+      "include": "scripts/installer.nsi",
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": false,
+      "oneClick": false,
+      "menuCategory": false,
+      "perMachine": true,
+      "warningsAsErrors": false
     }
   },
   "config": {

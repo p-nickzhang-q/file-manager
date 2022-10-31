@@ -1,6 +1,6 @@
 import {FileEntity} from "zhangyida-tools";
 
-const {FileEntity: File} = require('zhangyida-tools');
+const {FileEntity: File, ListProcess} = require('zhangyida-tools');
 
 
 function getDataJsonEntityWithDefault(path: string, jsonFileName: string, fileContent = "[]") {
@@ -35,7 +35,8 @@ function getLevel(path: string) {
 export const allFiles = ref<FileEntity[]>([]);
 
 export function getDbData() {
-    const object = DATA_JSON_ENTITY.json() || [];
+    // @ts-ignore
+    const object = sortFile(DATA_JSON_ENTITY.json().map(v => File.ofJson(v))) || [];
     allFiles.value = object;
     return object;
 }
@@ -53,6 +54,7 @@ function syncDbData(actual: any[], path: string) {
             value.tag = []
             dbData.push(value)
         } else {
+            // @ts-ignore
             value.tag = dbData[index].tag
         }
     })
@@ -68,7 +70,7 @@ function syncDbData(actual: any[], path: string) {
             dbData = dbData.filter(value1 => !value1.filePath.startsWith(value.filePath))
         }
     })
-    DATA_JSON_ENTITY.writeJson(dbData)
+    writeToDataFile(dbData)
 }
 
 export type FileEntityProcess = (file: any) => void;
@@ -78,12 +80,34 @@ export const updateFileEntity = (file: any, process: FileEntityProcess) => {
     // @ts-ignore
     const find = dbData.find(value => fileEqual(file, value));
     process(find);
-    DATA_JSON_ENTITY.writeJson(dbData)
+    writeToDataFile(dbData)
+}
+
+const TypeSort = [
+    'disk', 'folder', 'file'
+]
+
+function sortFile(actual: FileEntity[]) {
+    // @ts-ignore
+    return actual.sort((a, b) => {
+        if (a.type !== b.type) {
+            return TypeSort.indexOf(a.type) - TypeSort.indexOf(b.type)
+        } else if (a.type === b.type && a.type === 'file') {
+            if (a.getNameAndExt()[1] > b.getNameAndExt()[1]) {
+                return 1
+            } else if (a.getNameAndExt()[1] < b.getNameAndExt()[1]) {
+                return -1
+            } else {
+                return 0;
+            }
+        }
+    });
 }
 
 export const fetchWithDisk = async (path = "", isFolder?: boolean) => {
-    const actual = await File.fetchWithDisk(path, isFolder);
+    let actual = await File.fetchWithDisk(path, isFolder);
     syncDbData(actual, path);
+    actual = sortFile(actual)
     return actual
 }
 
@@ -95,6 +119,12 @@ export const OPERATION = {
 
 function copy(element: any) {
     return JSON.parse(JSON.stringify(element));
+}
+
+function writeToDataFile(dataJson: FileEntity[]) {
+    // @ts-ignore
+    dataJson.forEach(value => delete value['_removed'])
+    DATA_JSON_ENTITY.writeJson(dataJson)
 }
 
 export function syncDataJson(oldFilePath: string, newFileEntity = new File(), operation = OPERATION.RENAME) {
@@ -144,5 +174,5 @@ export function syncDataJson(oldFilePath: string, newFileEntity = new File(), op
 
     map[operation]()
 
-    DATA_JSON_ENTITY.writeJson(dataJson)
+    writeToDataFile(dataJson);
 }

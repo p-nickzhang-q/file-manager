@@ -76,7 +76,6 @@ const handleOpenNewTap = (path: string) => {
 
 const handleTabRemove = (name: string) => {
   DataMap.delete(name)
-  console.log(DataMap)
 }
 
 const onGoTo = (path: string, tabName: string) => {

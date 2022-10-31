@@ -14,7 +14,6 @@ const Control = 'Control'
 export const currentTab = ref('0')
 
 document.addEventListener("keyup", ev => {
-    ev.preventDefault()
     //Shift Control
     if (ev.key === Shift) {
         isShift.value = false
@@ -29,7 +28,6 @@ document.addEventListener("keyup", ev => {
 })
 
 document.addEventListener("keydown", ev => {
-    ev.preventDefault()
     if (ev.key === Shift) {
         isShift.value = true
     } else if (ev.key === Control) {

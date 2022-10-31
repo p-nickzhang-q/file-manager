@@ -9,6 +9,7 @@ const MenuId = {
     copy: "copy",
     remove: "remove",
     newTab: "newTab",
+    openInFileExplore: 'openInFileExplore'
 }
 
 const MenuConfig = {
@@ -16,7 +17,8 @@ const MenuConfig = {
         ...Object.values(MenuId),
     ],
     disk: [
-        MenuId.newTab
+        MenuId.newTab,
+        MenuId.openInFileExplore
     ],
     file: [
         MenuId.rename,
@@ -25,7 +27,6 @@ const MenuConfig = {
         MenuId.remove,
     ],
     multi: [
-        MenuId.newTab,
         MenuId.move,
         MenuId.copy,
         MenuId.remove,
@@ -38,7 +39,8 @@ export default function () {
     const selectedFiles = ref<FileEntity[]>();
 
     const getProcessFiles = () => {
-        if (selectedFiles.value?.length) {
+        // @ts-ignore
+        if (selectedFiles.value?.length > 1) {
             return selectedFiles.value
         } else {
             return [target.value]
@@ -46,7 +48,7 @@ export default function () {
     }
 
     // @ts-ignore
-    const buildMouseMenu = ({openRename, openMove, openCopy, handleDelete, openNewTap}) => {
+    const buildMouseMenu = ({openRename, openMove, openCopy, handleDelete, openNewTap, openInFileExplore}) => {
         return MenuC.buildFromTemplate([
             {
                 label: '重命名', id: MenuId.rename, click() {
@@ -73,6 +75,11 @@ export default function () {
                     openNewTap(getProcessFiles())
                 }
             },
+            {
+                label: "在文件浏览器中打开", id: MenuId.openInFileExplore, click() {
+                    openInFileExplore(target.value)
+                }
+            }
         ]);
     };
 

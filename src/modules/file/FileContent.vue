@@ -46,6 +46,8 @@ const menu = buildMouseMenu({
     for (let item of items) {
       emits('openNewTap', item.filePath)
     }
+  }, openInFileExplore(item: FileEntity) {
+    item.open()
   }
 });
 
@@ -65,7 +67,7 @@ getData(props.path)
     <el-col :span="16" v-loading="fileLoading">
       <BasicScrollbar>
         <div>
-         shift: {{ isShift }} ctrl: {{ isCtrl }}
+          shift: {{ isShift }} ctrl: {{ isCtrl }}
           <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
             <BasicFile style="width: 100%;" :file="item"
                        @contextmenu.prevent="handleFileContentMenu(item)"
