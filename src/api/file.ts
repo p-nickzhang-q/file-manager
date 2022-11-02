@@ -1,7 +1,6 @@
 import {FileEntity} from "zhangyida-tools";
 
-const {FileEntity: File, ListProcess} = require('zhangyida-tools');
-
+const {FileEntity: File} = require('zhangyida-tools');
 
 function getDataJsonEntityWithDefault(path: string, jsonFileName: string, fileContent = "[]") {
     return File.ofNullable(path, jsonFileName).orElse(() => {
@@ -121,7 +120,7 @@ function copy(element: any) {
     return JSON.parse(JSON.stringify(element));
 }
 
-function writeToDataFile(dataJson: FileEntity[]) {
+export function writeToDataFile(dataJson: FileEntity[]) {
     // @ts-ignore
     dataJson.forEach(value => delete value['_removed'])
     DATA_JSON_ENTITY.writeJson(dataJson)

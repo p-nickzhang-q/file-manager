@@ -1,4 +1,4 @@
-import {getDbTag, TAG_DATA_ENTITY} from "../api/file";
+import {allFiles, getDbTag, TAG_DATA_ENTITY, writeToDataFile} from "../api/file";
 
 const tagOptions = ref<string[]>([]);
 
@@ -18,11 +18,28 @@ export default function () {
             }
         })
         if (changed) {
-            syncTagData()
+            syncTagData({})
         }
     }
 
-    function syncTagData() {
+    function syncTagData(config: { newTag?: string; oldTag?: string, removeTag?: string }) {
+        allFiles.value.forEach(file => {
+            if (config.removeTag) {
+                // @ts-ignore
+                file.tag = file.tag.filter(tag => tag !== config.removeTag)
+            }
+            if (config.newTag && config.oldTag) {
+                // @ts-ignore
+                file.tag = file.tag.map((tag) => {
+                    if (tag === config.oldTag) {
+                        return config.newTag
+                    } else {
+                        return tag;
+                    }
+                })
+            }
+        })
+        writeToDataFile(allFiles.value)
         TAG_DATA_ENTITY.writeJson(tagOptions.value)
         getTags()
     }

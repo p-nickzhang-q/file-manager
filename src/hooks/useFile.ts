@@ -8,12 +8,12 @@ export const DataMap = new Map();
 
 export const isShift = ref(false);
 export const isCtrl = ref(false);
-let LastShiftIndex: number;
+
 const Shift = 'Shift'
 const Control = 'Control'
 export const currentTab = ref('0')
 
-document.addEventListener("keyup", ev => {
+window.onkeyup = ev => {
     //Shift Control
     if (ev.key === Shift) {
         isShift.value = false
@@ -24,16 +24,17 @@ document.addEventListener("keyup", ev => {
         for (let file of items.value) {
             file.selected = true
         }
+        return false;
     }
-})
+}
 
-document.addEventListener("keydown", ev => {
+window.onkeydown = ev => {
     if (ev.key === Shift) {
         isShift.value = true
     } else if (ev.key === Control) {
         isCtrl.value = true
     }
-})
+}
 
 export function useFile(tabName: string, emits?: any) {
 
@@ -44,13 +45,22 @@ export function useFile(tabName: string, emits?: any) {
         const searchMode = ref(false);
         const currentFile = ref(new FileEntity());
         const searchValue = ref<string>();
+        const LastShiftIndex = ref<number>();
 
         DataMap.set(tabName, {
-            items, currentPath, fileLoading, currentFile, searchValue, searchMode
+            items, currentPath, fileLoading, currentFile, searchValue, searchMode, LastShiftIndex
         })
     }
 
-    const {items, currentPath, fileLoading, currentFile, searchValue, searchMode} = DataMap.get(tabName);
+    const {
+        items,
+        currentPath,
+        fileLoading,
+        currentFile,
+        searchValue,
+        searchMode,
+        LastShiftIndex
+    } = DataMap.get(tabName);
 
     const onViewDetail = (item: any, i: number) => {
         function clearSelected() {
@@ -62,10 +72,10 @@ export function useFile(tabName: string, emits?: any) {
             clearSelected();
             // @ts-ignore
             items.value.filter((v, index) => {
-                if (LastShiftIndex < i) {
-                    return index >= LastShiftIndex && index <= i
+                if (LastShiftIndex.value < i) {
+                    return index >= LastShiftIndex.value && index <= i
                 } else {
-                    return index >= i && index <= LastShiftIndex
+                    return index >= i && index <= LastShiftIndex.value
                 }
                 // @ts-ignore
             }).forEach(v => {
@@ -76,7 +86,7 @@ export function useFile(tabName: string, emits?: any) {
         } else {
             clearSelected();
             item.selected = !item.selected
-            LastShiftIndex = i;
+            LastShiftIndex.value = i;
         }
         currentFile.value = item
     }
@@ -120,6 +130,8 @@ export function useFile(tabName: string, emits?: any) {
         fileLoading.value = true
         if (searchValue.value) {
             items.value = allFiles.value.filter(i => {
+                return i.filePath.startsWith(currentPath.value)
+            }).filter(i => {
                 // @ts-ignore
                 return i.fileName.includes(searchValue.value) || i.tag.some(tag => tag.includes(searchValue.value))
             }).map(i => File.ofJson(i))

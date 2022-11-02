@@ -19,7 +19,7 @@ const shadow = computed(() => {
   <el-card :shadow="shadow" :class="{'selected':file.selected}">
     <slot>
       <!--      <BasicFileIcon :file="file"/>-->
-      <el-image v-if="isImage(file.fileName).isImage" :src="file.filePath" preview-teleported
+      <el-image v-if="isImage(file.fileName)" :src="file.filePath" preview-teleported
                 :preview-src-list="[file.filePath]"
                 style="width: 10%; height: 5%" fit="cover" lazy/>
       <BasicFileIcon v-else :file="file"/>

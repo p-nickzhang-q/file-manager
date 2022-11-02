@@ -15,6 +15,7 @@ defineExpose({
   getTags,
 })
 
+const emits = defineEmits(['clear']);
 
 type RowConfig = {
   edit: boolean,
@@ -36,9 +37,11 @@ const onEdit = (index: number) => {
 const save = (index: number) => {
   const config = editMap.value.get(index)!;
   config.edit = false;
+  const oldTag = tagOptions.value[index];
   // @ts-ignore
   tagOptions.value[index] = config.tag
-  syncTagData()
+  syncTagData({oldTag, newTag: config.tag})
+  emits('clear')
   message()
 }
 
@@ -52,8 +55,9 @@ const isEdit = (i: number) => {
 
 const onDelete = async (i: number) => {
   await confirm("确认删除吗")
-  tagOptions.value.splice(i, 1)
-  syncTagData()
+  const removeTags = tagOptions.value.splice(i, 1);
+  syncTagData({removeTag: removeTags[0]})
+  emits('clear')
   message();
 }
 

@@ -4,7 +4,7 @@
       <FileMain ref="fileMain"/>
     </el-tab-pane>
     <el-tab-pane label="标签" name="tag">
-      <TagMain @openNewTap="handleOpen"/>
+      <NewTagMain @openNewTap="handleOpen"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -12,6 +12,7 @@
 <script lang="ts" setup>
 import FileMain from "./modules/file/FileMain.vue";
 import TagMain from "./modules/tag/TagMain.vue";
+import NewTagMain from "./modules/tag/NewTagMain.vue";
 
 const active = ref("file");
 const fileMain = ref<any>();

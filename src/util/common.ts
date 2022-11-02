@@ -113,34 +113,81 @@ export function toWindowPath(path: string) {
     return s;
 }
 
-const imageExt = [
-    "bmp",
-    "jpg",
-    "png",
-    "tif",
-    "gif",
-    "pcx",
-    "tga",
-    "exif",
-    "fpx",
-    "svg",
-    "psd",
-    "cdr",
-    "pcd",
-    "dxf",
-    "ufo",
-    "eps",
-    "ai",
-    "raw",
-    "wmf",
-    "jpeg",
-]
+const MediaType = {
+    image: [
+        "bmp",
+        "jpg",
+        "png",
+        "tif",
+        "gif",
+        "pcx",
+        "tga",
+        "exif",
+        "fpx",
+        "svg",
+        "psd",
+        "cdr",
+        "pcd",
+        "dxf",
+        "ufo",
+        "eps",
+        "ai",
+        "raw",
+        "wmf",
+        "jpeg",
+    ],
+    audio: [
+        "mp3",
+        "aac",
+        "wav",
+        "wma",
+        "cda",
+        "flac",
+        "m4a",
+        "mid",
+        "mka",
+        "mp2",
+        "mpa",
+        "mpc",
+        "ape",
+        "ofr",
+        "ogg",
+        "ra",
+        "wv",
+        "tta",
+        "ac3",
+        "dts"
+    ],
+    video: [
+        "mp4",
+        "m4v",
+        "mov",
+        "qt",
+        "avi",
+        "flv",
+        "wmv",
+        "asf",
+        "mpeg",
+        "mpg",
+        "vob",
+        "mkv",
+        "rm",
+        "rmvb",
+        "ts",
+        "dat",
+    ]
+}
 
 export function isImage(fileName: string) {
     const ext = getExtByFileName(fileName);
-    const isImage = imageExt.includes(ext);
-    return {
-        isImage,
-        ext
-    }
+    return MediaType.image.includes(ext);
+}
+
+export function getMediaType(fileName: string) {
+    const ext = getExtByFileName(fileName);
+
+    Object.keys(MediaType).find(key => {
+        // @ts-ignore
+        return MediaType[key].includes(ext);
+    })
 }
