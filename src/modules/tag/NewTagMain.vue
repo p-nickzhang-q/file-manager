@@ -94,7 +94,6 @@ const openTagManage = async () => {
   <el-divider content-position="center">Jenny & Nick</el-divider>
   <el-row>
     <el-col :span="16" v-loading="fileLoading">
-      shift: {{ isShift }} ctrl: {{ isCtrl }}
       <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
         <BasicFile style="width: 100%;" :file="item"
                    @contextmenu.prevent="handleFileContentMenu(item)"

@@ -2,7 +2,7 @@
 import {Search} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
-import {isShift, isCtrl, useDelete, useFile} from "../../hooks/useFile";
+import {useDelete, useFile} from "../../hooks/useFile";
 import FileDetail from "./FileDetail.vue";
 import BasicDialog from "../../components/BasicDialog.vue";
 import {useRename} from "./useRename";
@@ -11,6 +11,7 @@ import {useCopy} from "./useCopy";
 import BasicScrollbar from "../../components/BasicScrollbar.vue";
 import {FileEntity} from "zhangyida-tools";
 import useMenu from "../../hooks/useMenu";
+import FileSort from "./FileSort.vue";
 
 const props = defineProps<{
   tab: string,
@@ -30,7 +31,8 @@ const {
   onSearch,
   emitGoto,
   searchMode,
-  selectedFiles
+  selectedFiles,
+  sorts
 } = useFile(props.tab!, emits);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
@@ -65,9 +67,9 @@ getData(props.path)
   <br>
   <el-row :gutter="10">
     <el-col :span="16" v-loading="fileLoading">
+      <FileSort v-model="sorts"/>
       <BasicScrollbar>
         <div>
-          shift: {{ isShift }} ctrl: {{ isCtrl }}
           <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
             <BasicFile style="width: 100%;" :file="item"
                        @contextmenu.prevent="handleFileContentMenu(item)"

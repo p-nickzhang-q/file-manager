@@ -1,6 +1,6 @@
 import {confirm} from "../util/common";
 import {FileEntity} from "zhangyida-tools";
-import {allFiles, fetchWithDisk} from "../api/file";
+import {allFiles, fetchWithDisk, sortFile} from "../api/file";
 
 const {FileEntity: File} = require('zhangyida-tools');
 
@@ -46,9 +46,10 @@ export function useFile(tabName: string, emits?: any) {
         const currentFile = ref(new FileEntity());
         const searchValue = ref<string>();
         const LastShiftIndex = ref<number>();
+        const sorts = ref(['default']);
 
         DataMap.set(tabName, {
-            items, currentPath, fileLoading, currentFile, searchValue, searchMode, LastShiftIndex
+            items, currentPath, fileLoading, currentFile, searchValue, searchMode, LastShiftIndex, sorts
         })
     }
 
@@ -59,7 +60,8 @@ export function useFile(tabName: string, emits?: any) {
         currentFile,
         searchValue,
         searchMode,
-        LastShiftIndex
+        LastShiftIndex,
+        sorts
     } = DataMap.get(tabName);
 
     const onViewDetail = (item: any, i: number) => {
@@ -132,8 +134,15 @@ export function useFile(tabName: string, emits?: any) {
             items.value = allFiles.value.filter(i => {
                 return i.filePath.startsWith(currentPath.value)
             }).filter(i => {
-                // @ts-ignore
-                return i.fileName.includes(searchValue.value) || i.tag.some(tag => tag.includes(searchValue.value))
+                try {
+                    // @ts-ignore
+                    return i.fileName.includes(searchValue.value) || i.tag.some(tag => tag.includes(searchValue.value))
+                } catch (e) {
+                    if (e) {
+                        console.error(e);
+                    }
+                }
+                return false;
             }).map(i => File.ofJson(i))
             searchMode.value = true
         } else {
@@ -147,6 +156,43 @@ export function useFile(tabName: string, emits?: any) {
         // @ts-ignore
         return items.value.filter(i => i.selected)
     });
+
+    const sortFunc = {
+        ['default']() {
+            items.value = sortFile(items.value)
+        },
+        updateTime: {
+            desc() {
+                // @ts-ignore
+                items.value = items.value.sort((a, b) => a.lastUpdateTime - b.lastUpdateTime).reverse()
+            },
+            asc() {
+                // @ts-ignore
+                items.value = items.value.sort((a, b) => a.lastUpdateTime - b.lastUpdateTime)
+            }
+        },
+        createTime: {
+            desc() {
+                // @ts-ignore
+                items.value = items.value.sort((a, b) => a.createTime - b.createTime).reverse()
+            },
+            asc() {
+                // @ts-ignore
+                items.value = items.value.sort((a, b) => a.createTime - b.createTime)
+            }
+        },
+    }
+
+    watchEffect(() => {
+        const [property, sort] = sorts.value;
+        if (!sort) {
+            // @ts-ignore
+            sortFunc[property]()
+        } else {
+            // @ts-ignore
+            sortFunc[property][sort]()
+        }
+    })
 
     return {
         items,
@@ -162,6 +208,7 @@ export function useFile(tabName: string, emits?: any) {
         emitGoto,
         searchMode,
         selectedFiles,
+        sorts
     };
 }
 

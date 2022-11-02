@@ -1,6 +1,7 @@
 import {FileEntity} from "zhangyida-tools";
+import {getMediaType} from "../util/common";
 
-const {FileEntity: File} = require('zhangyida-tools');
+const {FileEntity: File, ListProcess} = require('zhangyida-tools');
 
 function getDataJsonEntityWithDefault(path: string, jsonFileName: string, fileContent = "[]") {
     return File.ofNullable(path, jsonFileName).orElse(() => {
@@ -36,12 +37,17 @@ export const allFiles = ref<FileEntity[]>([]);
 export function getDbData() {
     // @ts-ignore
     const object = sortFile(DATA_JSON_ENTITY.json().map(v => File.ofJson(v))) || [];
+    // object.forEach(value => {
+    //     // @ts-ignore
+    //     value.tag = value.tag.filter(Boolean)
+    // })
     allFiles.value = object;
     return object;
 }
 
 export function getDbTag() {
-    return TAG_DATA_ENTITY.json() || []
+    const object = TAG_DATA_ENTITY.json() || [];
+    return ListProcess.of([...object, "image", "audio", "video"]).unique().toList()
 }
 
 function syncDbData(actual: any[], path: string) {
@@ -86,7 +92,7 @@ const TypeSort = [
     'disk', 'folder', 'file'
 ]
 
-function sortFile(actual: FileEntity[]) {
+export function sortFile(actual: FileEntity[]) {
     // @ts-ignore
     return actual.sort((a, b) => {
         if (a.type !== b.type) {
@@ -97,7 +103,13 @@ function sortFile(actual: FileEntity[]) {
             } else if (a.getNameAndExt()[1] < b.getNameAndExt()[1]) {
                 return -1
             } else {
-                return 0;
+                if (a.getNameAndExt()[0] > b.getNameAndExt()[0]) {
+                    return 1
+                } else if (a.getNameAndExt()[0] < b.getNameAndExt()[0]) {
+                    return -1
+                } else {
+                    return 0;
+                }
             }
         }
     });
@@ -121,8 +133,16 @@ function copy(element: any) {
 }
 
 export function writeToDataFile(dataJson: FileEntity[]) {
-    // @ts-ignore
-    dataJson.forEach(value => delete value['_removed'])
+    dataJson.forEach(value => {
+        // @ts-ignore
+        delete value['_removed'];
+        const mediaType = getMediaType(value.fileName);
+        // @ts-ignore
+        if (value.isFile() && mediaType && !value.tag.includes(mediaType)) {
+            // @ts-ignore
+            value.tag.push(mediaType)
+        }
+    })
     DATA_JSON_ENTITY.writeJson(dataJson)
 }
 

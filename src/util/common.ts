@@ -186,7 +186,7 @@ export function isImage(fileName: string) {
 export function getMediaType(fileName: string) {
     const ext = getExtByFileName(fileName);
 
-    Object.keys(MediaType).find(key => {
+    return Object.keys(MediaType).find(key => {
         // @ts-ignore
         return MediaType[key].includes(ext);
     })
