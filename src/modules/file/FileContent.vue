@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {Search} from '@element-plus/icons-vue'
+import {Search, ArrowLeftBold, ArrowRightBold} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
 import {useDelete, useFile} from "../../hooks/useFile";
@@ -32,7 +32,9 @@ const {
   emitGoto,
   searchMode,
   selectedFiles,
-  sorts
+  sorts,
+  goForward,
+  goBack
 } = useFile(props.tab!, emits);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
@@ -62,12 +64,23 @@ getData(props.path)
 </script>
 
 <template>
-  <div v-show="searchMode">搜索模式</div>
-  <BasicBreadcrumb v-show="!searchMode" :tab="tab" @goto="emitGoto($event)"/>
+  <!-- 导航栏 -->
+  <div style="display: flex">
+    <div>
+      <el-button type="primary" circle :icon="ArrowLeftBold" @click="goBack"/>
+      <el-button type="primary" circle :icon="ArrowRightBold" @click="goForward"/>
+    </div>
+    <el-divider style="padding-top: 20px" direction="vertical"/>
+    <FileSort v-model="sorts"/>
+    <el-divider style="padding-top: 20px" direction="vertical"/>
+    <div style="padding-right: 10px;padding-top: 10px">
+      <div v-show="searchMode">搜索模式</div>
+      <BasicBreadcrumb v-show="!searchMode" :tab="tab" @goto="emitGoto($event)"/>
+    </div>
+  </div>
   <br>
   <el-row :gutter="10">
     <el-col :span="16" v-loading="fileLoading">
-      <FileSort v-model="sorts"/>
       <BasicScrollbar>
         <div>
           <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">

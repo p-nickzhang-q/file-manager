@@ -10,7 +10,6 @@ export default function () {
 
     const ifNewTagThenAdd = (tags = []) => {
         let changed = false;
-        // @ts-ignore
         tags.forEach(value => {
             if (!tagOptions.value.includes(value)) {
                 tagOptions.value.push(value)

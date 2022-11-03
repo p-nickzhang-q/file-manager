@@ -1,10 +1,10 @@
 import {confirm} from "../util/common";
 import {FileEntity} from "zhangyida-tools";
-import {allFiles, fetchWithDisk, sortFile} from "../api/file";
+import {allFiles, fetchWithDisk, FileTagEntity, sortFile} from "../api/file";
 
-const {FileEntity: File} = require('zhangyida-tools');
+const {FileEntity: File, ListProcess} = require('zhangyida-tools');
 
-export const DataMap = new Map();
+export const DataMap = new Map<string, TabData>();
 
 export const isShift = ref(false);
 export const isCtrl = ref(false);
@@ -20,8 +20,8 @@ window.onkeyup = ev => {
     } else if (ev.key === Control) {
         isCtrl.value = false
     } else if (ev.key === 'a' && ev.ctrlKey) {
-        const {items} = DataMap.get(currentTab.value);
-        for (let file of items.value) {
+        const tabData = DataMap.get(currentTab.value);
+        for (let file of tabData!.items.value) {
             file.selected = true
         }
         return false;
@@ -36,23 +36,26 @@ window.onkeydown = ev => {
     }
 }
 
+export class TabData {
+    items = ref<FileTagEntity[]>([]);
+    currentPath = ref("");
+    fileLoading = ref(false);
+    searchMode = ref(false);
+    currentFile = ref(new FileEntity());
+    searchValue = ref<string>();
+    LastShiftIndex = ref<number>(0);
+    sorts = ref(['default']);
+    history = ref<string[]>([""]);
+    historyIndex = ref<number>(0);
+}
+
 export function useFile(tabName: string, emits?: any) {
 
     if (!DataMap.has(tabName)) {
-        const items = ref<FileEntity[]>([]);
-        const currentPath = ref('');
-        const fileLoading = ref(false);
-        const searchMode = ref(false);
-        const currentFile = ref(new FileEntity());
-        const searchValue = ref<string>();
-        const LastShiftIndex = ref<number>();
-        const sorts = ref(['default']);
-
-        DataMap.set(tabName, {
-            items, currentPath, fileLoading, currentFile, searchValue, searchMode, LastShiftIndex, sorts
-        })
+        DataMap.set(tabName, new TabData())
     }
 
+    const tabData = DataMap.get(tabName)!;
     const {
         items,
         currentPath,
@@ -61,25 +64,24 @@ export function useFile(tabName: string, emits?: any) {
         searchValue,
         searchMode,
         LastShiftIndex,
-        sorts
-    } = DataMap.get(tabName);
+        sorts,
+        history,
+        historyIndex
+    } = tabData;
 
     const onViewDetail = (item: any, i: number) => {
         function clearSelected() {
-            // @ts-ignore
             items.value.forEach(i => i.selected = false)
         }
 
         if (isShift.value) {
             clearSelected();
-            // @ts-ignore
             items.value.filter((v, index) => {
                 if (LastShiftIndex.value < i) {
                     return index >= LastShiftIndex.value && index <= i
                 } else {
                     return index >= i && index <= LastShiftIndex.value
                 }
-                // @ts-ignore
             }).forEach(v => {
                 v.selected = true
             })
@@ -93,7 +95,7 @@ export function useFile(tabName: string, emits?: any) {
         currentFile.value = item
     }
 
-    const getData = async (path?: string) => {
+    const getData = async (path = '') => {
         items.value = await fetchWithDisk(path)
         currentPath.value = path
     }
@@ -102,6 +104,13 @@ export function useFile(tabName: string, emits?: any) {
         if (emits) {
             emits('goto', filePath)
         }
+    }
+
+    async function goto(filePath: string) {
+        fileLoading.value = true
+        emitGoto(filePath);
+        await getData(filePath)
+        fileLoading.value = false
     }
 
     const onGoTo = async (filePath = '', fromBread = false) => {
@@ -114,8 +123,19 @@ export function useFile(tabName: string, emits?: any) {
         if (file.isFile()) {
             await file.open()
         } else {
-            emitGoto(filePath);
-            await getData(filePath)
+            /**
+             * 如果新路径是以老路径开始,那么就是同一路径下属,则推入历史,
+             * 不然,则替换最后一个历史路径
+             */
+            const parentIndex = history.value.findIndex((i: string) => i.startsWith(File.getParentFolderPathByPath(filePath)));
+            if (filePath.startsWith(history.value.at(-1)!)) {
+                history.value.push(filePath)
+            } else {
+                history.value = history.value.filter((item: string, index: number) => index <= parentIndex)
+                history.value = ListProcess.of([...history.value, filePath]).unique().toList()
+            }
+            historyIndex.value = parentIndex + 1
+            await goto(filePath);
         }
         currentFile.value = new FileEntity()
         fileLoading.value = false
@@ -152,8 +172,21 @@ export function useFile(tabName: string, emits?: any) {
         fileLoading.value = false
     }
 
-    const selectedFiles = computed(args => {
-        // @ts-ignore
+    const goBack = async () => {
+        historyIndex.value--
+        const filePath = history.value[historyIndex.value];
+        await goto(filePath);
+    }
+
+    const goForward = async () => {
+        historyIndex.value++
+        const filePath = history.value[historyIndex.value];
+        if (filePath) {
+            await goto(filePath);
+        }
+    }
+
+    const selectedFiles = computed(() => {
         return items.value.filter(i => i.selected)
     });
 
@@ -163,27 +196,23 @@ export function useFile(tabName: string, emits?: any) {
         },
         updateTime: {
             desc() {
-                // @ts-ignore
                 items.value = items.value.sort((a, b) => a.lastUpdateTime - b.lastUpdateTime).reverse()
             },
             asc() {
-                // @ts-ignore
                 items.value = items.value.sort((a, b) => a.lastUpdateTime - b.lastUpdateTime)
             }
         },
         createTime: {
             desc() {
-                // @ts-ignore
                 items.value = items.value.sort((a, b) => a.createTime - b.createTime).reverse()
             },
             asc() {
-                // @ts-ignore
                 items.value = items.value.sort((a, b) => a.createTime - b.createTime)
             }
         },
     }
 
-    watchEffect(() => {
+    watch([sorts, items], () => {
         const [property, sort] = sorts.value;
         if (!sort) {
             // @ts-ignore
@@ -196,19 +225,21 @@ export function useFile(tabName: string, emits?: any) {
 
     return {
         items,
-        getData,
-        onGoTo,
         currentPath,
         breads,
         fileLoading,
         currentFile,
-        onViewDetail,
         searchValue,
-        onSearch,
-        emitGoto,
         searchMode,
         selectedFiles,
-        sorts
+        sorts,
+        getData,
+        onGoTo,
+        onViewDetail,
+        onSearch,
+        emitGoto,
+        goBack,
+        goForward
     };
 }
 

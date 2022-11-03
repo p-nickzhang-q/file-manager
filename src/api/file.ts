@@ -1,6 +1,11 @@
 import {FileEntity} from "zhangyida-tools";
 import {getMediaType} from "../util/common";
 
+export interface FileTagEntity extends FileEntity {
+    tag: string[]
+    selected?: boolean
+}
+
 const {FileEntity: File, ListProcess} = require('zhangyida-tools');
 
 function getDataJsonEntityWithDefault(path: string, jsonFileName: string, fileContent = "[]") {
@@ -92,7 +97,7 @@ const TypeSort = [
     'disk', 'folder', 'file'
 ]
 
-export function sortFile(actual: FileEntity[]) {
+export function sortFile(actual: FileTagEntity[]) {
     // @ts-ignore
     return actual.sort((a, b) => {
         if (a.type !== b.type) {

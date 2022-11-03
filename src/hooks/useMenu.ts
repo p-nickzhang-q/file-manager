@@ -36,10 +36,9 @@ const MenuConfig = {
 
 export default function () {
     const target = ref<FileEntity>();
-    const selectedFiles = ref<FileEntity[]>();
+    const selectedFiles = ref<FileEntity[]>([]);
 
     const getProcessFiles = () => {
-        // @ts-ignore
         if (selectedFiles.value?.length > 1) {
             return selectedFiles.value
         } else {
@@ -56,12 +55,12 @@ export default function () {
                 }
             },
             {
-                label: '移动', id: MenuId.move, click() {
+                label: '移动到', id: MenuId.move, click() {
                     openMove(getProcessFiles())
                 }
             },
             {
-                label: '复制', id: MenuId.copy, click() {
+                label: '复制到', id: MenuId.copy, click() {
                     openCopy(getProcessFiles())
                 }
             },

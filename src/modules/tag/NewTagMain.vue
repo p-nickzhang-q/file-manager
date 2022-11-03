@@ -12,6 +12,7 @@ import {FileEntity} from "zhangyida-tools";
 import {allFiles} from "../../api/file";
 import BasicFile from "../../components/BasicFile.vue";
 import useMenu from "../../hooks/useMenu";
+import BasicScrollbar from "../../components/BasicScrollbar.vue";
 
 const {FileEntity: File} = require('zhangyida-tools');
 
@@ -71,6 +72,7 @@ const openTagManage = async () => {
     await tabManage.value.getTags()
   })
 }
+
 </script>
 
 <template>
@@ -94,13 +96,15 @@ const openTagManage = async () => {
   <el-divider content-position="center">Jenny & Nick</el-divider>
   <el-row>
     <el-col :span="16" v-loading="fileLoading">
-      <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
-        <BasicFile style="width: 100%;" :file="item"
-                   @contextmenu.prevent="handleFileContentMenu(item)"
-                   @click.prevent="onViewDetail(item,i)"
-                   @dblclick.prevent="onGoTo(item.filePath,false)">
-        </BasicFile>
-      </el-row>
+      <BasicScrollbar>
+        <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
+          <BasicFile style="width: 100%;" :file="item"
+                     @contextmenu.prevent="handleFileContentMenu(item)"
+                     @click.prevent="onViewDetail(item,i)"
+                     @dblclick.prevent="onGoTo(item.filePath,false)">
+          </BasicFile>
+        </el-row>
+      </BasicScrollbar>
     </el-col>
     <el-col :span="7" :offset="1">
       <FileDetail :value="currentFile" @success="onSearch"/>
