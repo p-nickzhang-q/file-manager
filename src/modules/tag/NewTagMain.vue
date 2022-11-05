@@ -9,7 +9,7 @@ import {useMove} from "../file/useMove";
 import {useCopy} from "../file/useCopy";
 import TagManage from "./TagManage.vue";
 import {FileEntity} from "zhangyida-tools";
-import {allFiles} from "../../api/file";
+import {allFiles, FileTagEntity} from "../../api/file";
 import BasicFile from "../../components/BasicFile.vue";
 import useMenu from "../../hooks/useMenu";
 import BasicScrollbar from "../../components/BasicScrollbar.vue";
@@ -52,6 +52,9 @@ const menu = buildMouseMenu({
     }
   }, openInFileExplore(item: FileEntity) {
     item.open()
+  },
+  bulkAddTag(items: FileTagEntity[]) {
+    //todo
   }
 });
 

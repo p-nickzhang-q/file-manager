@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {Search, ArrowLeftBold, ArrowRightBold} from '@element-plus/icons-vue'
+import {Search, ArrowLeftBold, ArrowRightBold, Refresh} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
 import {useDelete, useFile} from "../../hooks/useFile";
@@ -12,6 +12,10 @@ import BasicScrollbar from "../../components/BasicScrollbar.vue";
 import {FileEntity} from "zhangyida-tools";
 import useMenu from "../../hooks/useMenu";
 import FileSort from "./FileSort.vue";
+import {ElNotification} from "_element-plus@2.2.19@element-plus";
+import {FileTagEntity} from "../../api/file";
+import FileTagBulkAdd from "./FileTagBulkAdd.vue";
+import {useBulkAddTag} from "./useBulkAddTag";
 
 const props = defineProps<{
   tab: string,
@@ -45,6 +49,8 @@ const {openCopy} = useCopy({getData, currentPath});
 
 const {buildMouseMenu, popup} = useMenu();
 
+const {openBulkAddTag, fileTagBulkAdd} = useBulkAddTag();
+
 const menu = buildMouseMenu({
   openRename, openMove, openCopy, handleDelete, openNewTap(items: FileEntity[]) {
     for (let item of items) {
@@ -52,12 +58,18 @@ const menu = buildMouseMenu({
     }
   }, openInFileExplore(item: FileEntity) {
     item.open()
-  }
+  }, bulkAddTag: openBulkAddTag
 });
 
 const handleFileContentMenu = (item: FileEntity) => {
   popup(menu, item, selectedFiles.value)
 }
+
+const onRefresh = async () => {
+  await getData(currentPath.value)
+  ElNotification.success({message: '刷新成功', duration: 1000})
+}
+
 
 getData(props.path)
 
@@ -67,16 +79,19 @@ getData(props.path)
   <!-- 导航栏 -->
   <div style="display: flex">
     <div>
-      <el-button type="primary" circle :icon="ArrowLeftBold" @click="goBack"/>
-      <el-button type="primary" circle :icon="ArrowRightBold" @click="goForward"/>
+      <el-button circle :icon="ArrowLeftBold" @click="goBack"/>
+      <el-button circle :icon="ArrowRightBold" @click="goForward"/>
     </div>
-    <el-divider style="padding-top: 20px" direction="vertical"/>
-    <FileSort v-model="sorts"/>
     <el-divider style="padding-top: 20px" direction="vertical"/>
     <div style="padding-right: 10px;padding-top: 10px">
       <div v-show="searchMode">搜索模式</div>
       <BasicBreadcrumb v-show="!searchMode" :tab="tab" @goto="emitGoto($event)"/>
     </div>
+  </div>
+  <br>
+  <div style="display: flex;justify-content: flex-end">
+    <FileSort v-model="sorts" style="padding-right: 10px"/>
+    <el-button type="primary" round :icon="Refresh" @click="onRefresh"/>
   </div>
   <br>
   <el-row :gutter="10">
@@ -118,6 +133,7 @@ getData(props.path)
       <el-button @click="handleRename">确认</el-button>
     </template>
   </BasicDialog>
+  <FileTagBulkAdd ref="fileTagBulkAdd"/>
 </template>
 
 <style scoped>

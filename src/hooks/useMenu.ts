@@ -9,12 +9,18 @@ const MenuId = {
     copy: "copy",
     remove: "remove",
     newTab: "newTab",
-    openInFileExplore: 'openInFileExplore'
+    openInFileExplore: 'openInFileExplore',
+    bulkAddTag: 'bulkAddTag',
 }
 
 const MenuConfig = {
     folder: [
-        ...Object.values(MenuId),
+        MenuId.rename,
+        MenuId.move,
+        MenuId.copy,
+        MenuId.remove,
+        MenuId.newTab,
+        MenuId.openInFileExplore
     ],
     disk: [
         MenuId.newTab,
@@ -30,6 +36,7 @@ const MenuConfig = {
         MenuId.move,
         MenuId.copy,
         MenuId.remove,
+        MenuId.bulkAddTag
     ]
 }
 
@@ -46,37 +53,49 @@ export default function () {
         }
     }
 
-    // @ts-ignore
-    const buildMouseMenu = ({openRename, openMove, openCopy, handleDelete, openNewTap, openInFileExplore}) => {
+    const buildMouseMenu = (config: {
+        openRename: any,
+        openMove: any,
+        openCopy: any,
+        handleDelete: any,
+        openNewTap: any,
+        openInFileExplore: any,
+        bulkAddTag: any
+    }) => {
         return MenuC.buildFromTemplate([
             {
                 label: '重命名', id: MenuId.rename, click() {
-                    openRename(target.value)
+                    config.openRename(target.value)
                 }
             },
             {
                 label: '移动到', id: MenuId.move, click() {
-                    openMove(getProcessFiles())
+                    config.openMove(getProcessFiles())
                 }
             },
             {
                 label: '复制到', id: MenuId.copy, click() {
-                    openCopy(getProcessFiles())
+                    config.openCopy(getProcessFiles())
                 }
             },
             {
                 label: '删除', id: MenuId.remove, click() {
-                    handleDelete(getProcessFiles())
+                    config.handleDelete(getProcessFiles())
                 }
             },
             {
                 label: '新标签打开', id: MenuId.newTab, click() {
-                    openNewTap(getProcessFiles())
+                    config.openNewTap(getProcessFiles())
                 }
             },
             {
                 label: "在文件浏览器中打开", id: MenuId.openInFileExplore, click() {
-                    openInFileExplore(target.value)
+                    config.openInFileExplore(target.value)
+                }
+            },
+            {
+                label: '批量添加标签', id: MenuId.bulkAddTag, click() {
+                    config.bulkAddTag(getProcessFiles())
                 }
             }
         ]);
