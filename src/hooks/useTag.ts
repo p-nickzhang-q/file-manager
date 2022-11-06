@@ -8,7 +8,7 @@ export default function () {
         tagOptions.value = getDbTag();
     }
 
-    const ifNewTagThenAdd = (tags = []) => {
+    const ifNewTagThenAdd = (tags: string[]) => {
         let changed = false;
         tags.forEach(value => {
             if (!tagOptions.value.includes(value)) {

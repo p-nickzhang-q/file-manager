@@ -20,17 +20,20 @@ const MenuConfig = {
         MenuId.copy,
         MenuId.remove,
         MenuId.newTab,
-        MenuId.openInFileExplore
+        MenuId.openInFileExplore,
+        MenuId.bulkAddTag
     ],
     disk: [
         MenuId.newTab,
-        MenuId.openInFileExplore
+        MenuId.openInFileExplore,
+        MenuId.bulkAddTag
     ],
     file: [
         MenuId.rename,
         MenuId.move,
         MenuId.copy,
         MenuId.remove,
+        MenuId.bulkAddTag
     ],
     multi: [
         MenuId.move,

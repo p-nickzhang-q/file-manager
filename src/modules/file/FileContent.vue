@@ -133,7 +133,7 @@ getData(props.path)
       <el-button @click="handleRename">确认</el-button>
     </template>
   </BasicDialog>
-  <FileTagBulkAdd ref="fileTagBulkAdd"/>
+  <FileTagBulkAdd ref="fileTagBulkAdd" @success="getData(currentPath)"/>
 </template>
 
 <style scoped>

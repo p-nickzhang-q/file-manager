@@ -15,6 +15,8 @@ import useMenu from "../../hooks/useMenu";
 import BasicScrollbar from "../../components/BasicScrollbar.vue";
 
 const {FileEntity: File} = require('zhangyida-tools');
+import FileTagBulkAdd from '../file/FileTagBulkAdd.vue'
+import {useBulkAddTag} from "../file/useBulkAddTag";
 
 const tags = ref<string[]>([]);
 const onSearch = async () => {
@@ -44,6 +46,7 @@ const {openMove} = useMove({getData: onSearch, currentPath: ref("")});
 const {openCopy} = useCopy({getData: onSearch, currentPath: ref("")});
 
 const {buildMouseMenu, popup} = useMenu();
+const {openBulkAddTag, fileTagBulkAdd} = useBulkAddTag();
 
 const menu = buildMouseMenu({
   openRename, openMove, openCopy, handleDelete, openNewTap(items: FileEntity[]) {
@@ -53,9 +56,7 @@ const menu = buildMouseMenu({
   }, openInFileExplore(item: FileEntity) {
     item.open()
   },
-  bulkAddTag(items: FileTagEntity[]) {
-    //todo
-  }
+  bulkAddTag: openBulkAddTag
 });
 
 const handleFileContentMenu = (item: FileEntity) => {
@@ -126,6 +127,7 @@ const openTagManage = async () => {
   <BasicDialog title="标签管理" ref="tabManageDialog">
     <TagManage ref="tabManage"/>
   </BasicDialog>
+  <FileTagBulkAdd ref="fileTagBulkAdd" @success="onSearch()"/>
 </template>
 
 <style scoped>

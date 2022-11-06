@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import FileTagsSelect from "./FileTagsSelect.vue";
 import BasicDialog from "../../components/BasicDialog.vue";
-import {FileTagEntity} from "../../api/file";
+import {FileTagEntity, updateFileTagEntities} from "../../api/file";
+import useTag from "../../hooks/useTag";
+
+const {ListProcess} = require('zhangyida-tools');
 
 const tags = ref<string[]>([]);
 const dialog = ref();
@@ -12,8 +15,17 @@ const open = (items: FileTagEntity[]) => {
   dialog.value.open()
 }
 
+const emits = defineEmits(['success']);
+
+const {ifNewTagThenAdd} = useTag();
+
 const handleAddTags = () => {
-  console.log(selectFiles.value)
+  updateFileTagEntities(selectFiles.value, file => {
+    file.tag = ListProcess.of([...file.tag, ...tags.value]).unique().toList()
+  })
+  ifNewTagThenAdd(tags.value)
+  emits('success')
+  dialog.value.close()
 }
 
 defineExpose({

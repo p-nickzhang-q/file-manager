@@ -27,7 +27,7 @@ function fileEqual(file1: any, file2: any) {
     return file1.filePath === file2.filePath
 }
 
-function filesContains(files = [], file: any) {
+function filesContains(files: any[], file: any) {
     return files.some(value => {
         return fileEqual(value, file)
     })
@@ -40,8 +40,7 @@ function getLevel(path: string) {
 export const allFiles = ref<FileEntity[]>([]);
 
 export function getDbData() {
-    // @ts-ignore
-    const object = sortFile(DATA_JSON_ENTITY.json().map(v => File.ofJson(v))) || [];
+    const object = sortFile(DATA_JSON_ENTITY.json().map((v: FileTagEntity) => File.ofJson(v))) || [];
     // object.forEach(value => {
     //     // @ts-ignore
     //     value.tag = value.tag.filter(Boolean)
@@ -57,26 +56,20 @@ export function getDbTag() {
 
 function syncDbData(actual: any[], path: string) {
     let dbData = getDbData();
-    // @ts-ignore
     actual.forEach(value => {
         const index = dbData.findIndex((exist: any) => fileEqual(exist, value));
         if (index === -1) {
             value.tag = []
             dbData.push(value)
         } else {
-            // @ts-ignore
             value.tag = dbData[index].tag
         }
     })
     const currentLevel = getLevel(path);
-    // @ts-ignore
-    const isCurrentChildFiles = value => value.filePath.startsWith(path) && getLevel(value.filePath) === currentLevel + 1;
-    // @ts-ignore
+    const isCurrentChildFiles = (value: FileTagEntity) => value.filePath.startsWith(path) && getLevel(value.filePath) === currentLevel + 1;
     dbData.filter(isCurrentChildFiles).forEach(value => {
-        // @ts-ignore
         const findIndex = actual.findIndex(value1 => fileEqual(value, value1));
         if (findIndex === -1) {
-            // @ts-ignore
             dbData = dbData.filter(value1 => !value1.filePath.startsWith(value.filePath))
         }
     })
@@ -86,11 +79,17 @@ function syncDbData(actual: any[], path: string) {
 export type FileEntityProcess = (file: any) => void;
 
 export const updateFileEntity = (file: any, process: FileEntityProcess) => {
-    const dbData = getDbData();
-    // @ts-ignore
-    const find = dbData.find(value => fileEqual(file, value));
+    const find = allFiles.value.find(value => fileEqual(file, value));
     process(find);
-    writeToDataFile(dbData)
+    writeToDataFile(allFiles.value)
+}
+
+export const updateFileTagEntities = (files: FileTagEntity[], process: FileEntityProcess) => {
+    const filter = allFiles.value.filter(value => filesContains(files, value));
+    for (let file of filter) {
+        process(file)
+    }
+    writeToDataFile(allFiles.value)
 }
 
 const TypeSort = [
@@ -155,7 +154,7 @@ export function syncDataJson(oldFilePath: string, newFileEntity = new File(), op
     const oldPathLevel = getLevel(oldFilePath);
     // @ts-ignore
     const childFilesPredicate = value => value.filePath.startsWith(oldFilePath) && getLevel(value.filePath) > oldPathLevel;
-    const dataJson = getDbData();
+    const dataJson = allFiles.value;
     // @ts-ignore
     const findIndex = dataJson.findIndex(value => value.filePath === oldFilePath);
 
