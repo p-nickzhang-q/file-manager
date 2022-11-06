@@ -26,7 +26,7 @@ const onSearch = async () => {
         // @ts-ignore
         return i.tag.includes(tag)
       })
-    }).map(i => File.ofJson(i))
+    })
   }
 }
 const emits = defineEmits(["openNewTap", "goto"]);

@@ -42,7 +42,7 @@ export class TabData {
     fileLoading = ref(false);
     searchMode = ref(false);
     currentFile = ref(new FileEntity());
-    searchValue = ref<string>();
+    searchValue = ref<string>('');
     LastShiftIndex = ref<number>(0);
     sorts = ref(['default']);
     history = ref<string[]>([""]);
@@ -155,7 +155,6 @@ export function useFile(tabName: string, emits?: any) {
                 return i.filePath.startsWith(currentPath.value)
             }).filter(i => {
                 try {
-                    // @ts-ignore
                     return i.fileName.includes(searchValue.value) || i.tag.some(tag => tag.includes(searchValue.value))
                 } catch (e) {
                     if (e) {
@@ -163,7 +162,7 @@ export function useFile(tabName: string, emits?: any) {
                     }
                 }
                 return false;
-            }).map(i => File.ofJson(i))
+            })
             searchMode.value = true
         } else {
             await getData(currentPath.value)

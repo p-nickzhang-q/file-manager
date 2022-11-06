@@ -1,9 +1,25 @@
 import {FileEntity} from "zhangyida-tools";
 import {getMediaType} from "../util/common";
 
-export interface FileTagEntity extends FileEntity {
-    tag: string[]
-    selected?: boolean
+export class FileTagEntity extends FileEntity {
+    tag: string[] = []
+    selected?: boolean = false
+    desc?: string
+    oriurl?: string
+    name?: string
+
+    static ofJson(json: any): FileTagEntity {
+        const fileEntity = super.ofJson(json);
+        const fileTagEntity = new FileTagEntity();
+        fileTagEntity.name = json.name
+        fileTagEntity.oriurl = json.oriurl
+        fileTagEntity.desc = json.desc
+        for (let key of Object.keys(fileEntity)) {
+            // @ts-ignore
+            fileTagEntity[key] = fileEntity[key]
+        }
+        return fileTagEntity;
+    }
 }
 
 const {FileEntity: File, ListProcess} = require('zhangyida-tools');
@@ -37,10 +53,10 @@ function getLevel(path: string) {
     return path.split("/").filter(Boolean).length;
 }
 
-export const allFiles = ref<FileEntity[]>([]);
+export const allFiles = ref<FileTagEntity[]>([]);
 
 export function getDbData() {
-    const object = sortFile(DATA_JSON_ENTITY.json().map((v: FileTagEntity) => File.ofJson(v))) || [];
+    const object = sortFile(DATA_JSON_ENTITY.json().map((v: FileTagEntity) => FileTagEntity.ofJson(v))) || [];
     // object.forEach(value => {
     //     // @ts-ignore
     //     value.tag = value.tag.filter(Boolean)
@@ -62,7 +78,12 @@ function syncDbData(actual: any[], path: string) {
             value.tag = []
             dbData.push(value)
         } else {
+            // if (value.fileName === 'test.txt') {
+            // }
             value.tag = dbData[index].tag
+            value.name = dbData[index].name
+            value.oriurl = dbData[index].oriurl
+            value.desc = dbData[index].desc
         }
     })
     const currentLevel = getLevel(path);

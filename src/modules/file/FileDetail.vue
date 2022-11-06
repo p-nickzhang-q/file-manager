@@ -3,8 +3,11 @@ import FileTagsSelect from "./FileTagsSelect.vue";
 import useTag from "../../hooks/useTag";
 import {errorMessage, longTimeFormat, message} from "../../util/common";
 import {FileEntity} from "zhangyida-tools";
-import {updateFileEntity} from "../../api/file";
+import {fetchWithDisk, FileTagEntity, updateFileEntity} from "../../api/file";
+import {ElNotification} from "element-plus";
 
+const {dialog} = require("@electron/remote");
+const fs = require('fs');
 const props = defineProps<{
   value: FileEntity
 }>();
@@ -26,6 +29,12 @@ const onSave = async () => {
   updateFileEntity(sourceValue.value, file => {
     // @ts-ignore
     file.tag = sourceValue.value.tag
+    // @ts-ignore
+    file.name = sourceValue.value.name
+    // @ts-ignore
+    file.oriurl = sourceValue.value.oriurl
+    // @ts-ignore
+    file.desc = sourceValue.value.desc
     ifNewTagThenAdd(file.tag)
   })
   message()
@@ -49,6 +58,40 @@ const showSize = computed(() => {
   return `${number.toFixed(2)}${sizeArray[index]}`
 });
 
+const onExport = async () => {
+  // @ts-ignore
+  const {fileName, tag, desc, oriurl} = sourceValue.value;
+  const fileEntities = await fetchWithDisk(sourceValue.value.filePath);
+
+  const json = {
+    folderName: fileName,
+    labels: tag,
+    desc,
+    oriurl,
+    files: fileEntities.filter((value: FileTagEntity) => value.isFile()).map((value: FileTagEntity) => {
+      return {
+        name: value.name || value.fileName,
+        oriname: value.fileName,
+        desc: value.desc,
+        labels: value.tag
+      }
+    })
+  }
+
+  const string = dialog.showSaveDialogSync({
+    title: "导出路径",
+    filters: [{
+      name: 'json', extensions: ['json']
+    }]
+  });
+  if (string) {
+    fs.writeFileSync(string, JSON.stringify(json))
+    ElNotification.success({
+      message: '导出成功'
+    })
+  }
+}
+
 </script>
 
 <template>
@@ -56,12 +99,24 @@ const showSize = computed(() => {
     <template #header>
       <div class="card-header">
         <span>{{ sourceValue.fileName }}</span>
-        <el-button class="button" type="text" @click="onSave">保存</el-button>
+        <div>
+          <el-button class="button" type="text" @click="onSave">保存</el-button>
+          <el-button class="button" type="text" v-show="sourceValue.isDirectory()" @click="onExport">导出json</el-button>
+        </div>
       </div>
     </template>
     <el-form label-position="top" size="large">
       <el-form-item label="标签">
         <FileTagsSelect v-model:value="sourceValue.tag"/>
+      </el-form-item>
+      <el-form-item label="展示名">
+        <el-input v-model="sourceValue.name"/>
+      </el-form-item>
+      <el-form-item label="原地址">
+        <el-input v-model="sourceValue.oriurl"/>
+      </el-form-item>
+      <el-form-item label="描述">
+        <el-input v-model="sourceValue.desc" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"/>
       </el-form-item>
       <el-form-item label="文件路径">
         {{ sourceValue.filePath }}
