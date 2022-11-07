@@ -35,6 +35,7 @@ getTags()
       allow-create
       default-first-option
       clearable
+      :reserve-keyword="false"
       @change="onChange"
   >
     <el-option

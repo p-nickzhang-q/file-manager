@@ -97,7 +97,7 @@ export default function () {
                 }
             },
             {
-                label: '批量添加标签', id: MenuId.bulkAddTag, click() {
+                label: '批量修改', id: MenuId.bulkAddTag, click() {
                     config.bulkAddTag(getProcessFiles())
                 }
             }

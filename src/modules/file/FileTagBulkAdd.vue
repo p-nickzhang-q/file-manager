@@ -3,15 +3,16 @@ import FileTagsSelect from "./FileTagsSelect.vue";
 import BasicDialog from "../../components/BasicDialog.vue";
 import {FileTagEntity, updateFileTagEntities} from "../../api/file";
 import useTag from "../../hooks/useTag";
+import {shallowCopy} from "../../util/common";
 
 const {ListProcess} = require('zhangyida-tools');
 
-const tags = ref<string[]>([]);
+const bulkFileTagEntity = ref<FileTagEntity>(new FileTagEntity());
 const dialog = ref();
 const selectFiles = ref<FileTagEntity[]>([]);
 
 const open = (items: FileTagEntity[]) => {
-  tags.value = []
+  bulkFileTagEntity.value = new FileTagEntity();
   selectFiles.value = items
   dialog.value.open()
 }
@@ -22,9 +23,10 @@ const {ifNewTagThenAdd} = useTag();
 
 const handleAddTags = () => {
   updateFileTagEntities(selectFiles.value, file => {
-    file.tag = ListProcess.of([...file.tag, ...tags.value]).unique().toList()
+    file.tag = ListProcess.of([...file.tag, ...bulkFileTagEntity.value.tag]).unique().toList()
+    shallowCopy(bulkFileTagEntity.value, file, ['name', 'oriurl', 'desc'])
   })
-  ifNewTagThenAdd(tags.value)
+  ifNewTagThenAdd(bulkFileTagEntity.value.tag)
   emits('success')
   dialog.value.close()
 }
@@ -35,8 +37,21 @@ defineExpose({
 </script>
 
 <template>
-  <BasicDialog title="批量添加标签" ref="dialog">
-    <FileTagsSelect v-model:value="tags"/>
+  <BasicDialog title="批量修改" ref="dialog">
+    <el-form label-position="top" size="large">
+      <el-form-item label="标签">
+        <FileTagsSelect v-model:value="bulkFileTagEntity.tag"/>
+      </el-form-item>
+      <el-form-item label="展示名">
+        <el-input v-model="bulkFileTagEntity.name"/>
+      </el-form-item>
+      <el-form-item label="原地址">
+        <el-input v-model="bulkFileTagEntity.oriurl"/>
+      </el-form-item>
+      <el-form-item label="描述">
+        <el-input v-model="bulkFileTagEntity.desc" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"/>
+      </el-form-item>
+    </el-form>
     <template #button>
       <el-button @click="handleAddTags">确认</el-button>
     </template>
