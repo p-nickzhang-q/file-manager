@@ -12,7 +12,7 @@ import BasicScrollbar from "../../components/BasicScrollbar.vue";
 import {FileEntity} from "zhangyida-tools";
 import useMenu from "../../hooks/useMenu";
 import FileSort from "./FileSort.vue";
-import {ElNotification} from "_element-plus@2.2.19@element-plus";
+import {ElNotification} from "element-plus";
 import {FileTagEntity} from "../../api/file";
 import FileTagBulkAdd from "./FileTagBulkAdd.vue";
 import {useBulkAddTag} from "./useBulkAddTag";
