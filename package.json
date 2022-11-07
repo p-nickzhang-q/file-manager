@@ -25,7 +25,7 @@
     "nsis": {
       "include": "scripts/installer.nsi",
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": false,
+      "createDesktopShortcut": true,
       "oneClick": false,
       "menuCategory": false,
       "perMachine": true,
