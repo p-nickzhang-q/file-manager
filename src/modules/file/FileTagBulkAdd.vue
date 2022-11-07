@@ -11,6 +11,7 @@ const dialog = ref();
 const selectFiles = ref<FileTagEntity[]>([]);
 
 const open = (items: FileTagEntity[]) => {
+  tags.value = []
   selectFiles.value = items
   dialog.value.open()
 }
