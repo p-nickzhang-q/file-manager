@@ -17,8 +17,13 @@ export default function () {
             }
         })
         if (changed) {
-            syncTagData({})
+            writeToTagData()
         }
+    }
+
+    function writeToTagData() {
+        TAG_DATA_ENTITY.writeJson(tagOptions.value)
+        getTags()
     }
 
     function syncTagData(config: { newTag?: string; oldTag?: string, removeTag?: string }) {
@@ -38,9 +43,8 @@ export default function () {
                 })
             }
         })
-        writeToDataFile(allFiles.value)
-        TAG_DATA_ENTITY.writeJson(tagOptions.value)
-        getTags()
+        writeToDataFile()
+        writeToTagData();
     }
 
 

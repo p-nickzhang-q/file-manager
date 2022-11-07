@@ -1,5 +1,5 @@
 import {FileEntity} from "zhangyida-tools";
-import {getMediaType} from "../util/common";
+import {getMediaType, shallowCopy} from "../util/common";
 
 export class FileTagEntity extends FileEntity {
     tag: string[] = []
@@ -11,13 +11,8 @@ export class FileTagEntity extends FileEntity {
     static ofJson(json: any): FileTagEntity {
         const fileEntity = super.ofJson(json);
         const fileTagEntity = new FileTagEntity();
-        fileTagEntity.name = json.name
-        fileTagEntity.oriurl = json.oriurl
-        fileTagEntity.desc = json.desc
-        for (let key of Object.keys(fileEntity)) {
-            // @ts-ignore
-            fileTagEntity[key] = fileEntity[key]
-        }
+        shallowCopy(json, fileTagEntity, ['name', 'oriurl', 'desc'])
+        shallowCopy(fileEntity, fileTagEntity)
         return fileTagEntity;
     }
 }
@@ -56,13 +51,13 @@ function getLevel(path: string) {
 export const allFiles = ref<FileTagEntity[]>([]);
 
 export function getDbData() {
-    const object = sortFile(DATA_JSON_ENTITY.json().map((v: FileTagEntity) => FileTagEntity.ofJson(v))) || [];
     // object.forEach(value => {
     //     // @ts-ignore
     //     value.tag = value.tag.filter(Boolean)
     // })
-    allFiles.value = object;
-    return object;
+    if (allFiles.value.length === 0) {
+        allFiles.value = sortFile(DATA_JSON_ENTITY.json().map((v: FileTagEntity) => FileTagEntity.ofJson(v))) || [];
+    }
 }
 
 export function getDbTag() {
@@ -71,30 +66,32 @@ export function getDbTag() {
 }
 
 function syncDbData(actual: any[], path: string) {
-    let dbData = getDbData();
+    getDbData();
     actual.forEach(value => {
-        const index = dbData.findIndex((exist: any) => fileEqual(exist, value));
+        const index = allFiles.value.findIndex((exist: any) => fileEqual(exist, value));
         if (index === -1) {
             value.tag = []
-            dbData.push(value)
+            allFiles.value.push(value)
         } else {
             // if (value.fileName === 'test.txt') {
             // }
-            value.tag = dbData[index].tag
-            value.name = dbData[index].name
-            value.oriurl = dbData[index].oriurl
-            value.desc = dbData[index].desc
+            shallowCopy(allFiles.value[index], value, ['tag', 'name', 'oriurl', 'desc'])
+            // value.tag = dbData[index].tag
+            // value.name = dbData[index].name
+            // value.oriurl = dbData[index].oriurl
+            // value.desc = dbData[index].desc
         }
     })
     const currentLevel = getLevel(path);
     const isCurrentChildFiles = (value: FileTagEntity) => value.filePath.startsWith(path) && getLevel(value.filePath) === currentLevel + 1;
-    dbData.filter(isCurrentChildFiles).forEach(value => {
+    /*删除实际中不存在的*/
+    allFiles.value.filter(isCurrentChildFiles).forEach(value => {
         const findIndex = actual.findIndex(value1 => fileEqual(value, value1));
         if (findIndex === -1) {
-            dbData = dbData.filter(value1 => !value1.filePath.startsWith(value.filePath))
+            allFiles.value = allFiles.value.filter(value1 => !value1.filePath.startsWith(value.filePath))
         }
     })
-    writeToDataFile(dbData)
+    writeToDataFile()
 }
 
 export type FileEntityProcess = (file: any) => void;
@@ -102,7 +99,7 @@ export type FileEntityProcess = (file: any) => void;
 export const updateFileEntity = (file: any, process: FileEntityProcess) => {
     const find = allFiles.value.find(value => fileEqual(file, value));
     process(find);
-    writeToDataFile(allFiles.value)
+    writeToDataFile()
 }
 
 export const updateFileTagEntities = (files: FileTagEntity[], process: FileEntityProcess) => {
@@ -110,7 +107,7 @@ export const updateFileTagEntities = (files: FileTagEntity[], process: FileEntit
     for (let file of filter) {
         process(file)
     }
-    writeToDataFile(allFiles.value)
+    writeToDataFile()
 }
 
 const TypeSort = [
@@ -157,8 +154,8 @@ function copy(element: any) {
     return JSON.parse(JSON.stringify(element));
 }
 
-export function writeToDataFile(dataJson: FileEntity[]) {
-    dataJson.forEach(value => {
+export function writeToDataFile() {
+    allFiles.value.forEach(value => {
         // @ts-ignore
         delete value['_removed'];
         const mediaType = getMediaType(value.fileName);
@@ -168,7 +165,7 @@ export function writeToDataFile(dataJson: FileEntity[]) {
             value.tag.push(mediaType)
         }
     })
-    DATA_JSON_ENTITY.writeJson(dataJson)
+    DATA_JSON_ENTITY.writeJson(allFiles.value)
 }
 
 export function syncDataJson(oldFilePath: string, newFileEntity = new File(), operation = OPERATION.RENAME) {
@@ -218,5 +215,5 @@ export function syncDataJson(oldFilePath: string, newFileEntity = new File(), op
 
     map[operation]()
 
-    writeToDataFile(dataJson);
+    writeToDataFile();
 }

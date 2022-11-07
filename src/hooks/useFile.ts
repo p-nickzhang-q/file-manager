@@ -1,6 +1,7 @@
 import {confirm} from "../util/common";
 import {FileEntity} from "zhangyida-tools";
-import {allFiles, fetchWithDisk, FileTagEntity, sortFile} from "../api/file";
+import {allFiles, fetchWithDisk, FileTagEntity, sortFile, writeToDataFile} from "../api/file";
+import {ElNotification} from "element-plus";
 
 const {FileEntity: File, ListProcess} = require('zhangyida-tools');
 
@@ -25,6 +26,15 @@ window.onkeyup = ev => {
             file.selected = true
         }
         return false;
+    } else if (ev.key === 's' && ev.ctrlKey) {
+        // console.log(allFiles.value.find(i => i.fileName === '160122.txt'))
+        writeToDataFile()
+        ElNotification.success({
+            message: "保存成功"
+        })
+    } else {
+        isShift.value = false
+        isCtrl.value = false
     }
 }
 

@@ -23,7 +23,6 @@ const createWindow = () => {
     win.loadURL(
         isDev ? "http://localhost:3001" : `file://${path.join(__dirname, '../dist/index.html')}`
     );
-    // win.loadURL("http://localhost:3000")
 };
 
 app.whenReady().then(() => {

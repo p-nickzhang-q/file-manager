@@ -25,6 +25,18 @@ export function deepCopy<T>(data: T): T {
     return JSON.parse(JSON.stringify(data))
 }
 
+export function shallowCopy(source: any, target: any, properties?: string[]) {
+    for (let key of Object.keys(source)) {
+        if (properties) {
+            if (properties.includes(key)) {
+                target[key] = source[key]
+            }
+        } else {
+            target[key] = source[key]
+        }
+    }
+}
+
 export function getTabNameByFilePath(filePath?: string) {
     if (filePath) {
         const split = filePath.split("/").filter(Boolean);

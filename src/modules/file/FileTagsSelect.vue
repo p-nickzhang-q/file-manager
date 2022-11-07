@@ -17,7 +17,11 @@ const localValue = computed({
   }
 });
 
-const {getTags, tagOptions} = useTag();
+const {getTags, tagOptions, ifNewTagThenAdd} = useTag();
+
+const onChange = (val: string[]) => {
+  ifNewTagThenAdd(val)
+}
 
 getTags()
 
@@ -31,6 +35,7 @@ getTags()
       allow-create
       default-first-option
       clearable
+      @change="onChange"
   >
     <el-option
         v-for="item in tagOptions"

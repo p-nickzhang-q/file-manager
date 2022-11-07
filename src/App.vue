@@ -11,8 +11,8 @@
 
 <script lang="ts" setup>
 import FileMain from "./modules/file/FileMain.vue";
-import TagMain from "./modules/tag/TagMain.vue";
 import NewTagMain from "./modules/tag/NewTagMain.vue";
+import {writeToDataFile} from "./api/file";
 
 const active = ref("file");
 const fileMain = ref<any>();
@@ -20,6 +20,14 @@ const handleOpen = (path: string) => {
   active.value = "file";
   fileMain.value.addNewTab(path)
 }
+
+window.onbeforeunload = (e) => {
+  // 不关闭窗口
+  // e.returnValue = false;
+  writeToDataFile()
+}
+
+
 </script>
 
 <style>
