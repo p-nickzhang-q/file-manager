@@ -155,9 +155,7 @@ export function writeToDataFile() {
         // @ts-ignore
         delete value['_removed'];
         const mediaType = getMediaType(value.fileName);
-        // @ts-ignore
         if (value.isFile() && mediaType && !value.tag.includes(mediaType)) {
-            // @ts-ignore
             value.tag.push(mediaType)
         }
     })
