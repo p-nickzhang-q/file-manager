@@ -57,6 +57,7 @@ export class TabData {
     sorts = ref(['default']);
     history = ref<string[]>([""]);
     historyIndex = ref<number>(0);
+    layout = ref<number>(6)
 }
 
 export function useFile(tabName: string, emits?: any) {
@@ -76,7 +77,8 @@ export function useFile(tabName: string, emits?: any) {
         LastShiftIndex,
         sorts,
         history,
-        historyIndex
+        historyIndex,
+        layout
     } = tabData;
 
     const onViewDetail = (item: any, i: number) => {
@@ -248,7 +250,8 @@ export function useFile(tabName: string, emits?: any) {
         onSearch,
         emitGoto,
         goBack,
-        goForward
+        goForward,
+        layout
     };
 }
 

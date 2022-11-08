@@ -76,10 +76,6 @@ function syncDbData(actual: any[], path: string) {
             // if (value.fileName === 'test.txt') {
             // }
             shallowCopy(allFiles.value[index], value, ['tag', 'name', 'oriurl', 'desc'])
-            // value.tag = dbData[index].tag
-            // value.name = dbData[index].name
-            // value.oriurl = dbData[index].oriurl
-            // value.desc = dbData[index].desc
         }
     })
     const currentLevel = getLevel(path);

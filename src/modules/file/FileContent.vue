@@ -16,6 +16,7 @@ import {ElNotification} from "element-plus";
 import {FileTagEntity} from "../../api/file";
 import FileTagBulkAdd from "./FileTagBulkAdd.vue";
 import {useBulkAddTag} from "./useBulkAddTag";
+import FileLayoutSelect from "./FileLayoutSelect.vue";
 
 const props = defineProps<{
   tab: string,
@@ -38,7 +39,8 @@ const {
   selectedFiles,
   sorts,
   goForward,
-  goBack
+  goBack,
+  layout
 } = useFile(props.tab!, emits);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
@@ -90,7 +92,8 @@ getData(props.path)
   </div>
   <br>
   <div style="display: flex;justify-content: flex-end">
-    <FileSort v-model="sorts" style="padding-right: 10px"/>
+    <FileLayoutSelect v-model:value="layout" style="padding-right: 10px"/>
+    <FileSort v-model:model-value="sorts" style="padding-right: 10px"/>
     <el-button type="primary" round :icon="Refresh" @click="onRefresh"/>
   </div>
   <br>
@@ -98,12 +101,13 @@ getData(props.path)
     <el-col :span="16" v-loading="fileLoading">
       <BasicScrollbar>
         <div>
-          <el-row align="middle" v-for="(item,i) of items" :key="item.filePath">
-            <BasicFile style="width: 100%;" :file="item"
-                       @contextmenu.prevent="handleFileContentMenu(item)"
-                       @click.prevent="onViewDetail(item,i)"
-                       @dblclick.prevent="onGoTo(item.filePath,false)">
-            </BasicFile>
+          <el-row align="middle" :gutter="5">
+            <el-col :span="layout" v-for="(item,i) of items" :key="item.filePath">
+              <BasicFile :file="item"
+                         @contextmenu.prevent="handleFileContentMenu(item)"
+                         @click.prevent="onViewDetail(item,i)"
+                         @dblclick.prevent="onGoTo(item.filePath,false)"/>
+            </el-col>
           </el-row>
         </div>
       </BasicScrollbar>
@@ -120,6 +124,7 @@ getData(props.path)
             @clear="onSearch"
         />
       </el-row>
+      <br>
       <FileDetail :value="currentFile" @success="getData(currentPath)"/>
     </el-col>
   </el-row>
@@ -137,7 +142,7 @@ getData(props.path)
 </template>
 
 <style scoped>
-.el-row {
+.el-col {
   margin-bottom: 20px;
 }
 </style>

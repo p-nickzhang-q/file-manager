@@ -21,16 +21,16 @@ const shadow = computed(() => {
       <!--      <BasicFileIcon :file="file"/>-->
       <el-image v-if="isImage(file.fileName)" :src="file.filePath" preview-teleported
                 :preview-src-list="[file.filePath]"
-                style="width: 10%; height: 5%" fit="cover" lazy/>
+                style="width: 100%; display: block" fit="cover" lazy/>
       <BasicFileIcon v-else :file="file"/>
       <div>
         <span>{{ file.fileName }}</span>
       </div>
-<!--      <div style="display:flex;">-->
-<!--        <span>创建时间:{{ longTimeFormat(file.createTime) }}</span>-->
-<!--        <div style="width: 100px;"></div>-->
-<!--        <span>更新时间:{{ longTimeFormat(file.lastUpdateTime) }}</span>-->
-<!--      </div>-->
+      <!--      <div style="display:flex;">-->
+      <!--        <span>创建时间:{{ longTimeFormat(file.createTime) }}</span>-->
+      <!--        <div style="width: 100px;"></div>-->
+      <!--        <span>更新时间:{{ longTimeFormat(file.lastUpdateTime) }}</span>-->
+      <!--      </div>-->
     </slot>
   </el-card>
 </template>
