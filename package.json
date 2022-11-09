@@ -1,6 +1,6 @@
 {
-  "name": "file-tag-zy",
-  "version": "0.0.1",
+  "name": "file-tag",
+  "version": "1.0.0",
   "main": "electron/main.js",
   "scripts": {
     "electron:dev": "concurrently -k \"npm run dev\" \"npm run electron\"",
