@@ -29,12 +29,11 @@ export default function () {
     function syncTagData(config: { newTag?: string; oldTag?: string, removeTag?: string }) {
         allFiles.value.forEach(file => {
             if (config.removeTag) {
-                // @ts-ignore
                 file.tag = file.tag.filter(tag => tag !== config.removeTag)
             }
             if (config.newTag && config.oldTag) {
                 // @ts-ignore
-                file.tag = file.tag.map((tag) => {
+                file.tag = file.tag.map(tag => {
                     if (tag === config.oldTag) {
                         return config.newTag
                     } else {

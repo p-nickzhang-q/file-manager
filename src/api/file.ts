@@ -5,13 +5,11 @@ export class FileTagEntity extends FileEntity {
     tag: string[] = []
     selected?: boolean = false
     desc?: string
-    oriurl?: string
-    name?: string
 
     static ofJson(json: any): FileTagEntity {
         const fileEntity = super.ofJson(json);
         const fileTagEntity = new FileTagEntity();
-        shallowCopy(json, fileTagEntity, ['name', 'oriurl', 'desc'])
+        shallowCopy(json, fileTagEntity, ['desc'])
         shallowCopy(fileEntity, fileTagEntity)
         return fileTagEntity;
     }
@@ -75,7 +73,7 @@ function syncDbData(actual: any[], path: string) {
         } else {
             // if (value.fileName === 'test.txt') {
             // }
-            shallowCopy(allFiles.value[index], value, ['tag', 'name', 'oriurl', 'desc'])
+            shallowCopy(allFiles.value[index], value, ['tag', 'desc'])
         }
     })
     const currentLevel = getLevel(path);
@@ -164,14 +162,11 @@ export function writeToDataFile() {
 
 export function syncDataJson(oldFilePath: string, newFileEntity = new File(), operation = OPERATION.RENAME) {
     const oldPathLevel = getLevel(oldFilePath);
-    // @ts-ignore
-    const childFilesPredicate = value => value.filePath.startsWith(oldFilePath) && getLevel(value.filePath) > oldPathLevel;
+    const childFilesPredicate = (value: FileTagEntity) => value.filePath.startsWith(oldFilePath) && getLevel(value.filePath) > oldPathLevel;
     const dataJson = allFiles.value;
-    // @ts-ignore
     const findIndex = dataJson.findIndex(value => value.filePath === oldFilePath);
 
-    // @ts-ignore
-    const replaceOldPath = value => {
+    const replaceOldPath = (value: FileTagEntity) => {
         value.filePath = value.filePath.replace(oldFilePath, newFileEntity.filePath)
     };
 
@@ -179,7 +174,6 @@ export function syncDataJson(oldFilePath: string, newFileEntity = new File(), op
         if (findIndex !== -1) {
             dataJson[findIndex] = newFileEntity;
             if (newFileEntity.isDirectory()) {
-                // @ts-ignore
                 dataJson.filter(childFilesPredicate).forEach(value => {
                     replaceOldPath(value);
                 })
@@ -196,7 +190,6 @@ export function syncDataJson(oldFilePath: string, newFileEntity = new File(), op
                 if (newFileEntity.isDirectory()) {
                     let copyRelatedJson = dataJson.filter(childFilesPredicate);
                     copyRelatedJson = copy(copyRelatedJson);
-                    // @ts-ignore
                     copyRelatedJson.forEach(value => {
                         replaceOldPath(value)
                     })

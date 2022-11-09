@@ -118,7 +118,6 @@ export default function () {
         })
 
         menu.popup({
-            // @ts-ignore
             window: BrowserWindow.getFocusedWindow()
         })
     };

@@ -1,15 +1,14 @@
 <script lang="ts" setup>
 
 import BasicFileIcon from "./BasicFileIcon.vue";
-import {FileEntity} from "zhangyida-tools";
-import {isImage, longTimeFormat} from "../util/common";
+import {isImage} from "../util/common";
+import {FileTagEntity} from "../api/file";
 
 const props = withDefaults(defineProps<{
-  file?: FileEntity
+  file: FileTagEntity
 }>(), {});
 
 const shadow = computed(() => {
-  // @ts-ignore
   return props.file.selected ? 'always' : 'hover'
 });
 

@@ -24,7 +24,7 @@ const {ifNewTagThenAdd} = useTag();
 const handleAddTags = () => {
   updateFileTagEntities(selectFiles.value, file => {
     file.tag = ListProcess.of([...file.tag, ...bulkFileTagEntity.value.tag]).unique().toList()
-    shallowCopy(bulkFileTagEntity.value, file, ['name', 'oriurl', 'desc'])
+    shallowCopy(bulkFileTagEntity.value, file, ['desc'])
   })
   ifNewTagThenAdd(bulkFileTagEntity.value.tag)
   emits('success')
@@ -41,12 +41,6 @@ defineExpose({
     <el-form label-position="top" size="large">
       <el-form-item label="标签">
         <FileTagsSelect v-model:value="bulkFileTagEntity.tag"/>
-      </el-form-item>
-      <el-form-item label="展示名">
-        <el-input v-model="bulkFileTagEntity.name"/>
-      </el-form-item>
-      <el-form-item label="原地址">
-        <el-input v-model="bulkFileTagEntity.oriurl"/>
       </el-form-item>
       <el-form-item label="描述">
         <el-input v-model="bulkFileTagEntity.desc" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"/>

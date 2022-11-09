@@ -25,7 +25,6 @@ const onSearch = async () => {
   if (tags.value.length > 0) {
     items.value = allFiles.value.filter(i => {
       return tags.value.every(tag => {
-        // @ts-ignore
         return i.tag.includes(tag)
       })
     })
