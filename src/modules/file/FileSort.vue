@@ -40,7 +40,12 @@ const options = [
     value: 'createTime',
     label: '创建时间',
     children: sort
-  }
+  },
+  {
+    value: 'fileSize',
+    label: '文件大小',
+    children: sort
+  },
 ]
 
 </script>

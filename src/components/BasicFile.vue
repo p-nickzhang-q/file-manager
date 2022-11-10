@@ -36,6 +36,6 @@ const shadow = computed(() => {
 
 <style scoped>
 .selected {
-  background: #d9d9d9;
+  background: #a0cfff;
 }
 </style>

@@ -221,6 +221,14 @@ export function useFile(tabName: string, emits?: any) {
                 items.value = items.value.sort((a, b) => a.createTime - b.createTime)
             }
         },
+        fileSize: {
+            desc() {
+                items.value = items.value.sort((a, b) => a.size - b.size).reverse()
+            },
+            asc() {
+                items.value = items.value.sort((a, b) => a.size - b.size)
+            }
+        },
     }
 
     watch([sorts, items], () => {
