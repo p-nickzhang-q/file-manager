@@ -1,7 +1,9 @@
 import {FileEntity} from "zhangyida-tools";
 import {Menu} from '@electron/remote';
+import {allFiles} from "../api/file";
+import {exportToJson, exportToXlsx} from "./useFile";
 
-const {BrowserWindow, Menu: MenuC} = require("@electron/remote");
+const {BrowserWindow, Menu: MenuClass} = require("@electron/remote");
 
 const MenuId = {
     rename: 'rename',
@@ -11,6 +13,10 @@ const MenuId = {
     newTab: "newTab",
     openInFileExplore: 'openInFileExplore',
     bulkAddTag: 'bulkAddTag',
+    export2: "export2",
+    exportCurrentFolderFiles2Xlsx: "exportCurrentFolderFiles2Xlsx",
+    exportCurrentAllFiles2Xlsx: "exportCurrentAllFiles2Xlsx",
+    exportAllFiles2Xlsx: "exportAllFiles2Xlsx",
 }
 
 const MenuConfig = {
@@ -43,6 +49,79 @@ const MenuConfig = {
     ]
 }
 
+export function useContextMenu(config: { getCurrentItems: any, getCurrentPath: any }) {
+    const menu = MenuClass.buildFromTemplate([
+        {
+            label: '导出',
+            id: MenuId.export2,
+            submenu: [
+                {
+                    label: 'Excel',
+                    submenu: [
+                        {
+                            label: '当前文件夹文件',
+                            id: MenuId.exportCurrentFolderFiles2Xlsx,
+                            click() {
+                                exportToXlsx(config.getCurrentItems())
+                            }
+                        },
+                        {
+                            label: '当前文件夹所有文件',
+                            id: MenuId.exportCurrentAllFiles2Xlsx,
+                            click() {
+                                const currentPath = config.getCurrentPath();
+                                const filter = allFiles.value.filter(value => value.filePath.startsWith(currentPath));
+                                exportToXlsx(filter)
+                            }
+                        },
+                        {
+                            label: '所有文件',
+                            id: MenuId.exportCurrentAllFiles2Xlsx,
+                            click() {
+                                exportToXlsx(allFiles.value)
+                            }
+                        }
+                    ]
+                },
+                {
+                    label: "Json",
+                    submenu: [
+                        {
+                            label: '当前文件夹文件',
+                            click() {
+                                exportToJson(config.getCurrentItems())
+                            }
+                        },
+                        {
+                            label: '当前文件夹所有文件',
+                            click() {
+                                const currentPath = config.getCurrentPath();
+                                const filter = allFiles.value.filter(value => value.filePath.startsWith(currentPath));
+                                exportToJson(filter)
+                            }
+                        },
+                        {
+                            label: '所有文件',
+                            click() {
+                                exportToJson(allFiles.value)
+                            }
+                        },
+                    ]
+                }
+            ]
+        }
+    ]);
+
+    const popup = () => {
+        menu.popup({
+            window: BrowserWindow.getFocusedWindow()
+        })
+    }
+
+    return {
+        popup
+    }
+}
 
 export default function () {
     const target = ref<FileEntity>();
@@ -65,7 +144,7 @@ export default function () {
         openInFileExplore: any,
         bulkAddTag: any
     }) => {
-        return MenuC.buildFromTemplate([
+        return MenuClass.buildFromTemplate([
             {
                 label: '重命名', id: MenuId.rename, click() {
                     config.openRename(target.value)

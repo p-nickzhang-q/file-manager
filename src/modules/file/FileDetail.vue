@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import FileTagsSelect from "./FileTagsSelect.vue";
 import useTag from "../../hooks/useTag";
-import {errorMessage, longTimeFormat, message, shallowCopy} from "../../util/common";
+import {longTimeFormat} from "../../util/common";
 import {FileEntity} from "zhangyida-tools";
-import {allFiles, fetchWithDisk, FileTagEntity, updateFileEntity, writeToDataFile} from "../../api/file";
-import {ElNotification} from "element-plus";
+import {allFiles, FileTagEntity} from "../../api/file";
 
 const {dialog} = require("@electron/remote");
 const fs = require('fs');

@@ -1,9 +1,16 @@
 import {confirm} from "../util/common";
-import {FileEntity} from "zhangyida-tools";
+import {ExcelColumnDefinition, FileEntity} from "zhangyida-tools";
 import {allFiles, fetchWithDisk, FileTagEntity, sortFile, writeToDataFile} from "../api/file";
 import {ElNotification} from "element-plus";
 
-const {FileEntity: File, ListProcess} = require('zhangyida-tools');
+const {dialog} = require("@electron/remote");
+const {
+    FileEntity: File,
+    ListProcess,
+    ExcelProcess: ExcelProcessClass,
+    ExcelColumnDefinition: ExcelColumnDefinitionClass
+} = require('zhangyida-tools');
+const fs = require('fs');
 
 export const DataMap = new Map<string, TabData>();
 
@@ -13,6 +20,17 @@ export const isCtrl = ref(false);
 const Shift = 'Shift'
 const Control = 'Control'
 export const currentTab = ref('0')
+
+const Excel_Definition_Map = new Map<string, ExcelColumnDefinition>([
+    ["fileName", new ExcelColumnDefinitionClass("文件名")],
+    ["filePath", new ExcelColumnDefinitionClass("文件路径")],
+    ["type", new ExcelColumnDefinitionClass("文件类型")],
+    ["size", new ExcelColumnDefinitionClass("文件大小")],
+    ["lastUpdateTime", new ExcelColumnDefinitionClass("更新时间")],
+    ["createTime", new ExcelColumnDefinitionClass("创建时间")],
+    ["tag", new ExcelColumnDefinitionClass("标签", (value: string) => value.split(','), (value: string[]) => value.join(','))],
+    ["desc", new ExcelColumnDefinitionClass("文件描述")],
+]);
 
 window.onkeyup = ev => {
     //Shift Control
@@ -25,7 +43,6 @@ window.onkeyup = ev => {
         for (let file of tabData!.items.value) {
             file.selected = true
         }
-        return false;
     } else if (ev.key === 's' && ev.ctrlKey) {
         // console.log(allFiles.value.find(i => i.fileName === '160122.txt'))
         writeToDataFile()
@@ -242,6 +259,7 @@ export function useFile(tabName: string, emits?: any) {
         }
     })
 
+
     return {
         items,
         currentPath,
@@ -252,6 +270,7 @@ export function useFile(tabName: string, emits?: any) {
         searchMode,
         selectedFiles,
         sorts,
+        layout,
         getData,
         onGoTo,
         onViewDetail,
@@ -259,8 +278,39 @@ export function useFile(tabName: string, emits?: any) {
         emitGoto,
         goBack,
         goForward,
-        layout
     };
+}
+
+export const exportToXlsx = (data: any[]) => {
+    const excelProcessClass = new ExcelProcessClass(data, Excel_Definition_Map);
+    const buffer = excelProcessClass.exportToBuffer("文件列表");
+    const string = dialog.showSaveDialogSync({
+        title: "导出路径",
+        filters: [{
+            name: 'xlsx', extensions: ['xlsx']
+        }]
+    });
+    if (string) {
+        fs.writeFileSync(string, buffer)
+        ElNotification.success({
+            message: '导出成功'
+        })
+    }
+}
+
+export const exportToJson = (data: any[]) => {
+    const string = dialog.showSaveDialogSync({
+        title: "导出路径",
+        filters: [{
+            name: 'json', extensions: ['json']
+        }]
+    });
+    if (string) {
+        fs.writeFileSync(string, JSON.stringify(data))
+        ElNotification.success({
+            message: '导出成功'
+        })
+    }
 }
 
 export function useDelete(getData: any) {
