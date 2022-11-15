@@ -1,5 +1,6 @@
 import {FileEntity} from "zhangyida-tools";
 import {getMediaType, shallowCopy} from "../util/common";
+import {ElNotification} from "element-plus";
 
 export class FileTagEntity extends FileEntity {
     tag: string[] = []
@@ -32,11 +33,11 @@ File.ofNullable(CONFIG_DIR).orElse(() => File.of(File.getParentFolderPathByPath(
 export const DATA_JSON_ENTITY = getDataJsonEntityWithDefault(CONFIG_DIR, TAG_DATA_FILE_NAME);
 export const TAG_DATA_ENTITY = getDataJsonEntityWithDefault(CONFIG_DIR, TAG_FILE_NAME);
 
-function fileEqual(file1: any, file2: any) {
+export function fileEqual(file1: any, file2: any) {
     return file1.filePath === file2.filePath
 }
 
-function filesContains(files: any[], file: any) {
+export function filesContains(files: any[], file: any) {
     return files.some(value => {
         return fileEqual(value, file)
     })
@@ -73,7 +74,10 @@ function syncDbData(actual: any[], path: string) {
         } else {
             // if (value.fileName === 'test.txt') {
             // }
+            // 将配置中的tag,desc付给实际文件
             shallowCopy(allFiles.value[index], value, ['tag', 'desc'])
+            // 将实际的文件名付给配置
+            shallowCopy(value, allFiles.value[index], ['fileName'])
         }
     })
     const currentLevel = getLevel(path);

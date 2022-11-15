@@ -28,7 +28,7 @@ const Excel_Definition_Map = new Map<string, ExcelColumnDefinition>([
     ["size", new ExcelColumnDefinitionClass("文件大小")],
     ["lastUpdateTime", new ExcelColumnDefinitionClass("更新时间")],
     ["createTime", new ExcelColumnDefinitionClass("创建时间")],
-    ["tag", new ExcelColumnDefinitionClass("标签", (value: string) => value.split(','), (value: string[]) => value.join(','))],
+    ["tag", new ExcelColumnDefinitionClass("标签", (value: string) => value.split(',').filter(Boolean), (value: string[]) => value.join(','))],
     ["desc", new ExcelColumnDefinitionClass("文件描述")],
 ]);
 
@@ -75,6 +75,7 @@ export class TabData {
     history = ref<string[]>([""]);
     historyIndex = ref<number>(0);
     layout = ref<number>(6)
+    diskMatch = ref();
 }
 
 export function useFile(tabName: string, emits?: any) {
@@ -271,6 +272,7 @@ export function useFile(tabName: string, emits?: any) {
         selectedFiles,
         sorts,
         layout,
+        diskMatch: tabData.diskMatch,
         getData,
         onGoTo,
         onViewDetail,
@@ -311,6 +313,11 @@ export const exportToJson = (data: any[]) => {
             message: '导出成功'
         })
     }
+}
+
+export const readExcel = (buffer: Buffer) => {
+    const excelProcessClass = new ExcelProcessClass([], Excel_Definition_Map);
+    return excelProcessClass.readFromBuffer(buffer);
 }
 
 export function useDelete(getData: any) {

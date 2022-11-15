@@ -16,6 +16,7 @@ import {ElNotification} from "element-plus";
 import FileTagBulkAdd from "./FileTagBulkAdd.vue";
 import {useBulkAddTag} from "./useBulkAddTag";
 import FileLayoutSelect from "./FileLayoutSelect.vue";
+import DiskMatch from "./DiskMatch.vue";
 
 const props = defineProps<{
   tab: string,
@@ -40,6 +41,7 @@ const {
   goForward,
   goBack,
   layout,
+  diskMatch
 } = useFile(props.tab!, emits);
 const {handleDelete} = useDelete(() => getData(currentPath.value));
 const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
@@ -51,12 +53,8 @@ const {openCopy} = useCopy({getData, currentPath});
 const {buildMouseMenu, popup} = useMenu();
 
 const {popup: ContentPopup} = useContextMenu({
-  getCurrentItems() {
-    return items.value
-  },
-  getCurrentPath() {
-    return currentPath.value
-  }
+  tab: props.tab,
+  emits
 });
 
 const {openBulkAddTag, fileTagBulkAdd} = useBulkAddTag();
@@ -149,6 +147,7 @@ getData(props.path)
     </template>
   </BasicDialog>
   <FileTagBulkAdd ref="fileTagBulkAdd" @success="getData(currentPath)"/>
+  <DiskMatch ref="diskMatch"/>
 </template>
 
 <style scoped>

@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     BasicFile: typeof import('./src/components/BasicFile.vue')['default']
     BasicFileIcon: typeof import('./src/components/BasicFileIcon.vue')['default']
     BasicScrollbar: typeof import('./src/components/BasicScrollbar.vue')['default']
+    BasicSelect: typeof import('./src/components/BasicSelect.vue')['default']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
     ElButton: typeof import('element-plus/es')['ElButton']

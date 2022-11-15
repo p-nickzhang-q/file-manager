@@ -1,9 +1,11 @@
 import {FileEntity} from "zhangyida-tools";
 import {Menu} from '@electron/remote';
 import {allFiles} from "../api/file";
-import {exportToJson, exportToXlsx} from "./useFile";
+import {exportToJson, exportToXlsx, readExcel, useFile} from "./useFile";
+import {BaseError} from "../util/error";
 
-const {BrowserWindow, Menu: MenuClass} = require("@electron/remote");
+const {BrowserWindow, Menu: MenuClass, dialog} = require("@electron/remote");
+const {FileEntity: FileEntityClass} = require('zhangyida-tools');
 
 const MenuId = {
     rename: 'rename',
@@ -49,7 +51,24 @@ const MenuConfig = {
     ]
 }
 
-export function useContextMenu(config: { getCurrentItems: any, getCurrentPath: any }) {
+export function useContextMenu(config: { tab: string, emits: any }) {
+    const {items, currentPath, diskMatch} = useFile(config.tab, config.emits);
+
+    function importConfigFile(strings: string[], getJsons: (fileEntity: FileEntity) => any[]) {
+        const fileEntity = FileEntityClass.ofNullable(strings[0]).orElseThrow(() => new BaseError('文件不存在'));
+
+        const jsons = getJsons(fileEntity);
+        // 2 获取所有盘符
+        const diskPaths = jsons.filter((value: any) => value.type === 'disk').map((value: any) => {
+            return {
+                filePath: value.filePath,
+                newFilePath: null
+            }
+        });
+        // 3 将盘符信息塞入盘符匹配中
+        diskMatch.value.open(diskPaths, jsons)
+    }
+
     const menu = MenuClass.buildFromTemplate([
         {
             label: '导出',
@@ -62,15 +81,14 @@ export function useContextMenu(config: { getCurrentItems: any, getCurrentPath: a
                             label: '当前文件夹文件',
                             id: MenuId.exportCurrentFolderFiles2Xlsx,
                             click() {
-                                exportToXlsx(config.getCurrentItems())
+                                exportToXlsx(items.value)
                             }
                         },
                         {
                             label: '当前文件夹所有文件',
                             id: MenuId.exportCurrentAllFiles2Xlsx,
                             click() {
-                                const currentPath = config.getCurrentPath();
-                                const filter = allFiles.value.filter(value => value.filePath.startsWith(currentPath));
+                                const filter = allFiles.value.filter(value => value.filePath.startsWith(currentPath.value));
                                 exportToXlsx(filter)
                             }
                         },
@@ -89,14 +107,13 @@ export function useContextMenu(config: { getCurrentItems: any, getCurrentPath: a
                         {
                             label: '当前文件夹文件',
                             click() {
-                                exportToJson(config.getCurrentItems())
+                                exportToJson(items.value)
                             }
                         },
                         {
                             label: '当前文件夹所有文件',
                             click() {
-                                const currentPath = config.getCurrentPath();
-                                const filter = allFiles.value.filter(value => value.filePath.startsWith(currentPath));
+                                const filter = allFiles.value.filter(value => value.filePath.startsWith(currentPath.value));
                                 exportToJson(filter)
                             }
                         },
@@ -107,6 +124,42 @@ export function useContextMenu(config: { getCurrentItems: any, getCurrentPath: a
                             }
                         },
                     ]
+                }
+            ]
+        },
+        {
+            label: "导入",
+            submenu: [
+                {
+                    label: "Excel",
+                    click() {
+                        // 1 读取Excel信息
+                        const strings = dialog.showOpenDialogSync({
+                            filters: [
+                                {
+                                    name: 'Excel', extensions: ['xlsx']
+                                }
+                            ]
+                        });
+                        if (strings) {
+                            importConfigFile(strings, (fileEntity: FileEntity) => readExcel(fileEntity.readAsBuffer()));
+                        }
+                    }
+                },
+                {
+                    label: "Json",
+                    click() {
+                        const strings = dialog.showOpenDialogSync({
+                            filters: [
+                                {
+                                    name: 'Json', extensions: ['json']
+                                }
+                            ]
+                        });
+                        if (strings) {
+                            importConfigFile(strings, fileEntity => JSON.parse(fileEntity.readAsBuffer().toString()))
+                        }
+                    }
                 }
             ]
         }

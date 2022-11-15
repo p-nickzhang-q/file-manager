@@ -46,40 +46,6 @@ const showSize = computed(() => {
   return `${number.toFixed(2)}${sizeArray[index]}`
 });
 
-// const onExport = async () => {
-//   // @ts-ignore
-//   const {fileName, tag, desc, oriurl} = sourceValue.value;
-//   const fileEntities = await fetchWithDisk(sourceValue.value.filePath);
-//
-//   const json = {
-//     folderName: fileName,
-//     labels: tag,
-//     desc,
-//     oriurl,
-//     files: fileEntities.filter((value: FileTagEntity) => value.isFile()).map((value: FileTagEntity) => {
-//       return {
-//         name: value.name || value.fileName,
-//         oriname: value.fileName,
-//         desc: value.desc,
-//         labels: value.tag
-//       }
-//     })
-//   }
-//
-//   const string = dialog.showSaveDialogSync({
-//     title: "导出路径",
-//     filters: [{
-//       name: 'json', extensions: ['json']
-//     }]
-//   });
-//   if (string) {
-//     fs.writeFileSync(string, JSON.stringify(json))
-//     ElNotification.success({
-//       message: '导出成功'
-//     })
-//   }
-// }
-
 </script>
 
 <template>
