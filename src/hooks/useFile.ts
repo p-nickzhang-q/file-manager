@@ -1,7 +1,7 @@
 import {confirm} from "../util/common";
 import {ExcelColumnDefinition, FileEntity} from "zhangyida-tools";
 import {allFiles, fetchWithDisk, FileTagEntity, sortFile, writeToDataFile} from "../api/file";
-import {ElNotification} from "element-plus";
+import {ElMessageBox, ElNotification} from "element-plus";
 
 const {dialog} = require("@electron/remote");
 const {
@@ -143,7 +143,10 @@ export function useFile(tabName: string, emits?: any) {
         fileLoading.value = false
     }
 
-    const onGoTo = async (filePath = '', fromBread = false) => {
+    const onGoTo = async (filePath = '', fromBread = false, isDiskOnline = true) => {
+        if (!isDiskOnline) {
+            return;
+        }
         fileLoading.value = true
         if (fromBread) {
             const index = breads.value.indexOf(filePath) + 1;
@@ -283,7 +286,7 @@ export function useFile(tabName: string, emits?: any) {
     };
 }
 
-export const exportToXlsx = (data: any[]) => {
+export const exportToXlsx = async (data: any[]) => {
     const excelProcessClass = new ExcelProcessClass(data, Excel_Definition_Map);
     const buffer = excelProcessClass.exportToBuffer("文件列表");
     const string = dialog.showSaveDialogSync({
@@ -294,13 +297,23 @@ export const exportToXlsx = (data: any[]) => {
     });
     if (string) {
         fs.writeFileSync(string, buffer)
-        ElNotification.success({
-            message: '导出成功'
-        })
+        await confirmOpen(string)
     }
 }
 
-export const exportToJson = (data: any[]) => {
+async function confirmOpen(string: string) {
+    try {
+        await ElMessageBox.confirm("导出成功,是否打开")
+        await File.of(string).open()
+    } catch (e) {
+
+    }
+    ElNotification.success({
+        message: '导出成功',
+    })
+}
+
+export const exportToJson = async (data: any[]) => {
     const string = dialog.showSaveDialogSync({
         title: "导出路径",
         filters: [{
@@ -309,9 +322,7 @@ export const exportToJson = (data: any[]) => {
     });
     if (string) {
         fs.writeFileSync(string, JSON.stringify(data))
-        ElNotification.success({
-            message: '导出成功'
-        })
+        await confirmOpen(string);
     }
 }
 

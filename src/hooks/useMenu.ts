@@ -6,7 +6,7 @@ import {BaseError} from "../util/error";
 
 const {BrowserWindow, Menu: MenuClass, dialog} = require("@electron/remote");
 const {FileEntity: FileEntityClass} = require('zhangyida-tools');
-
+// todo 手动删除不在线盘符
 const MenuId = {
     rename: 'rename',
     move: 'move',

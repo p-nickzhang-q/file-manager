@@ -6,6 +6,7 @@ export class FileTagEntity extends FileEntity {
     tag: string[] = []
     selected?: boolean = false
     desc?: string
+    isOnline = false;
 
     static ofJson(json: any): FileTagEntity {
         const fileEntity = super.ofJson(json);
@@ -64,7 +65,7 @@ export function getDbTag() {
     return ListProcess.of([...object, "image", "audio", "video"]).unique().toList()
 }
 
-function syncDbData(actual: any[], path: string) {
+function syncDbData(actual: FileTagEntity[], path: string) {
     getDbData();
     actual.forEach(value => {
         const index = allFiles.value.findIndex((exist: any) => fileEqual(exist, value));
@@ -85,7 +86,15 @@ function syncDbData(actual: any[], path: string) {
     /*删除实际中不存在的*/
     allFiles.value.filter(isCurrentChildFiles).forEach(value => {
         const findIndex = actual.findIndex(value1 => fileEqual(value, value1));
-        if (findIndex === -1) {
+        // 不因磁盘不在线而删除
+        if (value.isDisk()) {
+            if (findIndex === -1) {
+                value.isOnline = false;
+                actual.push(value)
+            } else {
+                actual[findIndex].isOnline = true;
+            }
+        } else if (findIndex === -1) {
             allFiles.value = allFiles.value.filter(value1 => !value1.filePath.startsWith(value.filePath))
         }
     })

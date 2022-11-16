@@ -114,7 +114,7 @@ const openTagManage = async () => {
               <BasicFile :file="item"
                          @contextmenu.prevent="handleFileContentMenu(item)"
                          @click.prevent="onViewDetail(item,i)"
-                         @dblclick.prevent="onGoTo(item.filePath,false)"/>
+                         @dblclick.prevent="onGoTo(item.filePath,false,item.isOnline)"/>
             </el-col>
           </el-row>
         </div>

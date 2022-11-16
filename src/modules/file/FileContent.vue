@@ -17,6 +17,7 @@ import FileTagBulkAdd from "./FileTagBulkAdd.vue";
 import {useBulkAddTag} from "./useBulkAddTag";
 import FileLayoutSelect from "./FileLayoutSelect.vue";
 import DiskMatch from "./DiskMatch.vue";
+import {FileTagEntity} from "../../api/file";
 
 const props = defineProps<{
   tab: string,
@@ -69,7 +70,10 @@ const menu = buildMouseMenu({
   }, bulkAddTag: openBulkAddTag
 });
 
-const handleFileContentMenu = (item: FileEntity) => {
+const handleFileContentMenu = (item: FileTagEntity) => {
+  if (item.isDisk() && !item.isOnline) {
+    return
+  }
   popup(menu, item, selectedFiles.value)
 }
 
@@ -113,7 +117,7 @@ getData(props.path)
                 <BasicFile :file="item"
                            @contextmenu.stop="handleFileContentMenu(item)"
                            @click.prevent="onViewDetail(item,i)"
-                           @dblclick.prevent="onGoTo(item.filePath,false)"/>
+                           @dblclick.prevent="onGoTo(item.filePath,false,item.isOnline)"/>
               </el-col>
             </el-row>
           </div>
