@@ -3,13 +3,21 @@
 import BasicFileIcon from "./BasicFileIcon.vue";
 import {isImage} from "../util/common";
 import {FileTagEntity} from "../api/file";
+import {useFile} from "../hooks/useFile";
 
 const props = withDefaults(defineProps<{
-  file: FileTagEntity
+  file: FileTagEntity,
+  tab: string
 }>(), {});
 
 const shadow = computed(() => {
   return props.file.selected ? 'always' : 'hover'
+});
+
+const {currentImagePaths} = useFile(props.tab);
+
+const imageIndex = computed(() => {
+  return currentImagePaths.value.indexOf(props.file.filePath)
 });
 
 </script>
@@ -19,7 +27,8 @@ const shadow = computed(() => {
     <slot>
       <!--      <BasicFileIcon :file="file"/>-->
       <el-image v-if="isImage(file.fileName)" :src="file.filePath" preview-teleported
-                :preview-src-list="[file.filePath]"
+                :preview-src-list="currentImagePaths"
+                :initial-index="imageIndex"
                 style="width: 100%; display: block" fit="cover" lazy/>
       <BasicFileIcon v-else :file="file"/>
       <div>

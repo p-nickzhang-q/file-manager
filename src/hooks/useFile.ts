@@ -1,4 +1,4 @@
-import {confirm} from "../util/common";
+import {confirm, isImage} from "../util/common";
 import {ExcelColumnDefinition, FileEntity} from "zhangyida-tools";
 import {allFiles, fetchWithDisk, FileTagEntity, sortFile, writeToDataFile} from "../api/file";
 import {ElMessageBox, ElNotification} from "element-plus";
@@ -263,6 +263,9 @@ export function useFile(tabName: string, emits?: any) {
         }
     })
 
+    const currentImagePaths = computed(() => {
+        return items.value.filter(i => isImage(i.fileName)).map(i => i.filePath)
+    });
 
     return {
         items,
@@ -283,6 +286,7 @@ export function useFile(tabName: string, emits?: any) {
         emitGoto,
         goBack,
         goForward,
+        currentImagePaths
     };
 }
 

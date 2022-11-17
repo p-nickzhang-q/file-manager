@@ -28,6 +28,7 @@ const onSearch = async () => {
   }
 }
 const emits = defineEmits(["openNewTap", "goto"]);
+const tabName = "tagMange";
 const {
   items,
   getData,
@@ -39,11 +40,11 @@ const {
   selectedFiles,
   layout,
   sorts
-} = useFile("tagMange", emits);
+} = useFile(tabName, emits);
 const {handleDelete} = useDelete(() => onSearch());
 const {openCopy} = useCopy({getData: onSearch, currentPath: ref("")});
 
-const {popup, fileTagBulkAdd, fileRename} = useMenu({tab: "tagMange", emits});
+const {popup, fileTagBulkAdd, fileRename} = useMenu({tab: tabName, emits});
 
 const handleFileContentMenu = (item: FileTagEntity) => {
   popup(item)
@@ -95,6 +96,7 @@ const openTagManage = async () => {
           <el-row align="middle" :gutter="5">
             <el-col :span="layout" v-for="(item,i) of items" :key="item.filePath">
               <BasicFile :file="item"
+                         :tab="tabName"
                          @contextmenu.prevent="handleFileContentMenu(item)"
                          @click.prevent="onViewDetail(item,i)"
                          @dblclick.prevent="onGoTo(item.filePath,false,item.isOnline)"/>

@@ -93,6 +93,7 @@ getData(props.path)
             <el-row align="middle" :gutter="5">
               <el-col :span="layout" v-for="(item,i) of items" :key="item.filePath">
                 <BasicFile :file="item"
+                           :tab="tab"
                            @contextmenu.stop="handleFileContentMenu(item)"
                            @click.prevent="onViewDetail(item,i)"
                            @dblclick.prevent="onGoTo(item.filePath,false,item.isOnline)"/>
