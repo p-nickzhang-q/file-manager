@@ -126,8 +126,10 @@ export function useFile(tabName: string, emits?: any) {
     }
 
     const getData = async (path = '') => {
+        fileLoading.value = true
         items.value = await fetchWithDisk(path)
         currentPath.value = path
+        fileLoading.value = false
     }
 
     function emitGoto(filePath: string) {
