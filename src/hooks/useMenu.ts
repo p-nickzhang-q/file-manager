@@ -1,15 +1,17 @@
 import {FileEntity} from "zhangyida-tools";
 import {Menu} from '@electron/remote';
-import {allFiles, FileTagEntity} from "../api/file";
+import {allFiles, FileTagEntity, removeStartWithFile, writeToDataFile} from "../api/file";
 import {exportToJson, exportToXlsx, readExcel, useDelete, useFile} from "./useFile";
 import {BaseError} from "../util/error";
 import {useMove} from "../modules/file/useMove";
 import {useCopy} from "../modules/file/useCopy";
 import {useBulkAddTag} from "../modules/file/useBulkAddTag";
+import {ElMessageBox} from "element-plus";
+import MenuItem = Electron.MenuItem;
 
 const {BrowserWindow, Menu: MenuClass, dialog} = require("@electron/remote");
 const {FileEntity: FileEntityClass} = require('zhangyida-tools');
-// todo 手动删除不在线盘符
+
 const MenuId = {
     rename: 'rename',
     move: 'move',
@@ -22,6 +24,7 @@ const MenuId = {
     exportCurrentFolderFiles2Xlsx: "exportCurrentFolderFiles2Xlsx",
     exportCurrentAllFiles2Xlsx: "exportCurrentAllFiles2Xlsx",
     exportAllFiles2Xlsx: "exportAllFiles2Xlsx",
+    removeOfflineDisk: 'removeOfflineDisk'
 }
 
 const MenuConfig = {
@@ -37,7 +40,10 @@ const MenuConfig = {
     disk: [
         MenuId.newTab,
         MenuId.openInFileExplore,
-        MenuId.bulkAddTag
+        MenuId.bulkAddTag,
+    ],
+    offlineDisk: [
+        MenuId.removeOfflineDisk
     ],
     file: [
         MenuId.rename,
@@ -234,21 +240,28 @@ export default function (config: { tab: string, emits: any }) {
             label: '批量修改', id: MenuId.bulkAddTag, click() {
                 openBulkAddTag(getProcessFiles())
             }
+        },
+        {
+            label: '移除不在线盘符', id: MenuId.removeOfflineDisk, async click() {
+                await ElMessageBox.confirm("确认移除吗?")
+                removeStartWithFile(target.value)
+                writeToDataFile()
+                await getData()
+            }
         }
     ]);
-    // @ts-ignore
-    const popup = (file: FileTagEntity) => {
-        if (file.isDisk() && !file.isOnline) {
-            return
-        }
 
+    const popup = (file: FileTagEntity) => {
         target.value = file
-        // @ts-ignore
-        menu.items.forEach(menuItem => {
+        menu.items.forEach((menuItem: MenuItem) => {
             if (selectedFiles.value.length > 1) {
                 menuItem.visible = MenuConfig.multi.includes(menuItem.id)
             } else {
-                menuItem.visible = MenuConfig[file.type].includes(menuItem.id)
+                if (file.isDisk() && !file.isOnline) {
+                    menuItem.visible = MenuConfig.offlineDisk.includes(menuItem.id)
+                } else {
+                    menuItem.visible = MenuConfig[file.type].includes(menuItem.id)
+                }
             }
         })
 

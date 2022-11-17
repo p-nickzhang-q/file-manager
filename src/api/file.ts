@@ -64,6 +64,10 @@ export function getDbTag() {
     return ListProcess.of([...object, "image", "audio", "video"]).unique().toList()
 }
 
+export function removeStartWithFile(value: FileTagEntity) {
+    allFiles.value = allFiles.value.filter(value1 => !value1.filePath.startsWith(value.filePath))
+}
+
 function syncDbData(actual: FileTagEntity[], path: string) {
     getDbData();
     actual.forEach(value => {
@@ -95,7 +99,7 @@ function syncDbData(actual: FileTagEntity[], path: string) {
                 value.isOnline = true
             }
         } else if (findIndex === -1) {
-            allFiles.value = allFiles.value.filter(value1 => !value1.filePath.startsWith(value.filePath))
+            removeStartWithFile(value);
         }
     })
     writeToDataFile()
