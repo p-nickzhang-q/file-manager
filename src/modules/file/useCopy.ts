@@ -1,12 +1,11 @@
 import {MouseOptionParam, toWindowPath} from "../../util/common";
-import {FileEntity} from "zhangyida-tools";
-import {OPERATION, syncDataJson} from "../../api/file";
+import {FileTagEntity, OPERATION, syncDataJson} from "../../api/file";
 
 const {dialog} = require("@electron/remote");
 
 export const useCopy = ({getData, currentPath}: MouseOptionParam) => {
 
-    const openCopy = async (t: FileEntity[]) => {
+    const openCopy = async (t: FileTagEntity[]) => {
         let defaultPath: string;
         if (t.length === 1) {
             defaultPath = toWindowPath(t[0].getParentFolderPath());

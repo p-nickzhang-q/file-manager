@@ -206,6 +206,7 @@ export function syncDataJson(oldFilePath: string, newFileEntity = new File(), op
                 const copyJson = copy(dataJson[findIndex]);
                 copyJson.filePath = newFileEntity.filePath
                 copyJson.fileName = newFileEntity.fileName
+                dataJson.push(FileTagEntity.ofJson(copyJson))
                 if (newFileEntity.isDirectory()) {
                     let copyRelatedJson = dataJson.filter(childFilesPredicate);
                     copyRelatedJson = copy(copyRelatedJson);
