@@ -1,11 +1,8 @@
 <script lang="ts" setup>
 import FileTagsSelect from "../file/FileTagsSelect.vue";
-import BasicFileIcon from "../../components/BasicFileIcon.vue";
 import FileDetail from "../file/FileDetail.vue";
-import {isShift, isCtrl, useDelete, useFile} from "../../hooks/useFile";
+import {useDelete, useFile} from "../../hooks/useFile";
 import BasicDialog from "../../components/BasicDialog.vue";
-import {useRename} from "../file/useRename";
-import {useMove} from "../file/useMove";
 import {useCopy} from "../file/useCopy";
 import TagManage from "./TagManage.vue";
 import {FileEntity} from "zhangyida-tools";
@@ -13,12 +10,12 @@ import {allFiles, FileTagEntity} from "../../api/file";
 import BasicFile from "../../components/BasicFile.vue";
 import useMenu from "../../hooks/useMenu";
 import BasicScrollbar from "../../components/BasicScrollbar.vue";
-
-const {FileEntity: File} = require('zhangyida-tools');
 import FileTagBulkAdd from '../file/FileTagBulkAdd.vue'
-import {useBulkAddTag} from "../file/useBulkAddTag";
 import FileLayoutSelect from "../file/FileLayoutSelect.vue";
 import FileSort from "../file/FileSort.vue";
+import FileRename from "../file/FileRename.vue";
+
+const {FileEntity: File} = require('zhangyida-tools');
 
 const tags = ref<string[]>([]);
 const onSearch = async () => {
@@ -44,26 +41,12 @@ const {
   sorts
 } = useFile("tagMange", emits);
 const {handleDelete} = useDelete(() => onSearch());
-const {newName, handleRename, openRename, renameDialog} = useRename({getData: onSearch, currentPath: ref("")});
-const {openMove} = useMove({getData: onSearch, currentPath: ref("")});
 const {openCopy} = useCopy({getData: onSearch, currentPath: ref("")});
 
-const {buildMouseMenu, popup} = useMenu();
-const {openBulkAddTag, fileTagBulkAdd} = useBulkAddTag();
+const {popup, fileTagBulkAdd, fileRename} = useMenu({tab: "tagMange", emits});
 
-const menu = buildMouseMenu({
-  openRename, openMove, openCopy, handleDelete, openNewTap(items: FileEntity[]) {
-    for (let item of items) {
-      emits('openNewTap', item.filePath)
-    }
-  }, openInFileExplore(item: FileEntity) {
-    item.open()
-  },
-  bulkAddTag: openBulkAddTag
-});
-
-const handleFileContentMenu = (item: FileEntity) => {
-  popup(menu, item, selectedFiles.value)
+const handleFileContentMenu = (item: FileTagEntity) => {
+  popup(item)
 }
 
 const onClear = () => {
@@ -124,16 +107,7 @@ const openTagManage = async () => {
       <FileDetail :value="currentFile" @success="onSearch"/>
     </el-col>
   </el-row>
-  <BasicDialog ref="renameDialog" title="重命名">
-    <el-form>
-      <el-form-item>
-        <el-input v-model="newName"/>
-      </el-form-item>
-    </el-form>
-    <template #button>
-      <el-button @click="handleRename">确认</el-button>
-    </template>
-  </BasicDialog>
+  <FileRename ref="fileRename"/>
   <BasicDialog title="标签管理" ref="tabManageDialog">
     <TagManage ref="tabManage"/>
   </BasicDialog>

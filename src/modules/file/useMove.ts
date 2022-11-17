@@ -1,12 +1,11 @@
 import {MouseOptionParam, toWindowPath} from "../../util/common";
-import {FileEntity} from "zhangyida-tools";
-import {OPERATION, syncDataJson} from "../../api/file";
+import {FileTagEntity, OPERATION, syncDataJson} from "../../api/file";
 import {ElNotification} from "element-plus";
 
 const {dialog} = require("@electron/remote");
 
 export const useMove = ({getData, currentPath}: MouseOptionParam) => {
-    const openMove = async (t: FileEntity[]) => {
+    const openMove = async (t: FileTagEntity[]) => {
         let defaultPath: string;
         if (t.length === 1) {
             defaultPath = toWindowPath(t[0].getParentFolderPath());

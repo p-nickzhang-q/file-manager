@@ -1,8 +1,11 @@
 import {FileEntity} from "zhangyida-tools";
 import {Menu} from '@electron/remote';
-import {allFiles} from "../api/file";
-import {exportToJson, exportToXlsx, readExcel, useFile} from "./useFile";
+import {allFiles, FileTagEntity} from "../api/file";
+import {exportToJson, exportToXlsx, readExcel, useDelete, useFile} from "./useFile";
 import {BaseError} from "../util/error";
+import {useMove} from "../modules/file/useMove";
+import {useCopy} from "../modules/file/useCopy";
+import {useBulkAddTag} from "../modules/file/useBulkAddTag";
 
 const {BrowserWindow, Menu: MenuClass, dialog} = require("@electron/remote");
 const {FileEntity: FileEntityClass} = require('zhangyida-tools');
@@ -176,9 +179,15 @@ export function useContextMenu(config: { tab: string, emits: any }) {
     }
 }
 
-export default function () {
-    const target = ref<FileEntity>();
-    const selectedFiles = ref<FileEntity[]>([]);
+export default function (config: { tab: string, emits: any }) {
+    const target = ref<FileTagEntity>(new FileTagEntity());
+
+    const {currentPath, getData, selectedFiles} = useFile(config.tab, config.emits);
+    const {openMove} = useMove({getData, currentPath});
+    const {openCopy} = useCopy({getData, currentPath});
+    const {handleDelete} = useDelete(() => getData(currentPath.value));
+    const {openBulkAddTag, fileTagBulkAdd} = useBulkAddTag();
+    const fileRename = ref();
 
     const getProcessFiles = () => {
         if (selectedFiles.value?.length > 1) {
@@ -188,61 +197,55 @@ export default function () {
         }
     }
 
-    const buildMouseMenu = (config: {
-        openRename: any,
-        openMove: any,
-        openCopy: any,
-        handleDelete: any,
-        openNewTap: any,
-        openInFileExplore: any,
-        bulkAddTag: any
-    }) => {
-        return MenuClass.buildFromTemplate([
-            {
-                label: '重命名', id: MenuId.rename, click() {
-                    config.openRename(target.value)
-                }
-            },
-            {
-                label: '移动到', id: MenuId.move, click() {
-                    config.openMove(getProcessFiles())
-                }
-            },
-            {
-                label: '复制到', id: MenuId.copy, click() {
-                    config.openCopy(getProcessFiles())
-                }
-            },
-            {
-                label: '删除', id: MenuId.remove, click() {
-                    config.handleDelete(getProcessFiles())
-                }
-            },
-            {
-                label: '新标签打开', id: MenuId.newTab, click() {
-                    config.openNewTap(getProcessFiles())
-                }
-            },
-            {
-                label: "在文件浏览器中打开", id: MenuId.openInFileExplore, click() {
-                    config.openInFileExplore(target.value)
-                }
-            },
-            {
-                label: '批量修改', id: MenuId.bulkAddTag, click() {
-                    config.bulkAddTag(getProcessFiles())
+    const menu = MenuClass.buildFromTemplate([
+        {
+            label: '重命名', id: MenuId.rename, click() {
+                fileRename.value.open(target.value)
+            }
+        },
+        {
+            label: '移动到', id: MenuId.move, async click() {
+                await openMove(getProcessFiles())
+            }
+        },
+        {
+            label: '复制到', id: MenuId.copy, async click() {
+                await openCopy(getProcessFiles())
+            }
+        },
+        {
+            label: '删除', id: MenuId.remove, async click() {
+                await handleDelete(getProcessFiles())
+            }
+        },
+        {
+            label: '新标签打开', id: MenuId.newTab, click() {
+                for (let item of getProcessFiles()) {
+                    config.emits('openNewTap', item.filePath)
                 }
             }
-        ]);
-    };
-
+        },
+        {
+            label: "在文件浏览器中打开", id: MenuId.openInFileExplore, click() {
+                target.value.open()
+            }
+        },
+        {
+            label: '批量修改', id: MenuId.bulkAddTag, click() {
+                openBulkAddTag(getProcessFiles())
+            }
+        }
+    ]);
     // @ts-ignore
-    const popup = (menu: Menu, file: FileEntity, files: FileEntity[]) => {
+    const popup = (file: FileTagEntity) => {
+        if (file.isDisk() && !file.isOnline) {
+            return
+        }
+
         target.value = file
-        selectedFiles.value = files
         // @ts-ignore
         menu.items.forEach(menuItem => {
-            if (files.length > 1) {
+            if (selectedFiles.value.length > 1) {
                 menuItem.visible = MenuConfig.multi.includes(menuItem.id)
             } else {
                 menuItem.visible = MenuConfig[file.type].includes(menuItem.id)
@@ -255,7 +258,7 @@ export default function () {
     };
 
     return {
-        buildMouseMenu, popup
+        popup, fileRename, fileTagBulkAdd
     }
 }
 

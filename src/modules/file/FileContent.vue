@@ -1,23 +1,18 @@
 <script lang="ts" setup>
-import {Search, ArrowLeftBold, ArrowRightBold, Refresh} from '@element-plus/icons-vue'
+import {ArrowLeftBold, ArrowRightBold, Refresh, Search} from '@element-plus/icons-vue'
 import BasicFile from "../../components/BasicFile.vue";
 import BasicBreadcrumb from "../../components/BasicBreadcrumb.vue";
-import {exportToXlsx, useDelete, useFile} from "../../hooks/useFile";
+import {useFile} from "../../hooks/useFile";
 import FileDetail from "./FileDetail.vue";
-import BasicDialog from "../../components/BasicDialog.vue";
-import {useRename} from "./useRename";
-import {useMove} from "./useMove";
-import {useCopy} from "./useCopy";
 import BasicScrollbar from "../../components/BasicScrollbar.vue";
-import {FileEntity} from "zhangyida-tools";
 import useMenu, {useContextMenu} from "../../hooks/useMenu";
 import FileSort from "./FileSort.vue";
 import {ElNotification} from "element-plus";
 import FileTagBulkAdd from "./FileTagBulkAdd.vue";
-import {useBulkAddTag} from "./useBulkAddTag";
 import FileLayoutSelect from "./FileLayoutSelect.vue";
 import DiskMatch from "./DiskMatch.vue";
 import {FileTagEntity} from "../../api/file";
+import FileRename from "./FileRename.vue";
 
 const props = defineProps<{
   tab: string,
@@ -44,37 +39,20 @@ const {
   layout,
   diskMatch
 } = useFile(props.tab!, emits);
-const {handleDelete} = useDelete(() => getData(currentPath.value));
-const {renameDialog, newName, openRename, handleRename} = useRename({getData, currentPath});
 
-const {openMove} = useMove({getData, currentPath});
 
-const {openCopy} = useCopy({getData, currentPath});
-
-const {buildMouseMenu, popup} = useMenu();
+const {popup, fileRename, fileTagBulkAdd} = useMenu({
+  tab: props.tab,
+  emits
+});
 
 const {popup: ContentPopup} = useContextMenu({
   tab: props.tab,
   emits
 });
 
-const {openBulkAddTag, fileTagBulkAdd} = useBulkAddTag();
-
-const menu = buildMouseMenu({
-  openRename, openMove, openCopy, handleDelete, openNewTap(items: FileEntity[]) {
-    for (let item of items) {
-      emits('openNewTap', item.filePath)
-    }
-  }, openInFileExplore(item: FileEntity) {
-    item.open()
-  }, bulkAddTag: openBulkAddTag
-});
-
 const handleFileContentMenu = (item: FileTagEntity) => {
-  if (item.isDisk() && !item.isOnline) {
-    return
-  }
-  popup(menu, item, selectedFiles.value)
+  popup(item)
 }
 
 const onRefresh = async () => {
@@ -140,16 +118,7 @@ getData(props.path)
       </el-col>
     </el-row>
   </div>
-  <BasicDialog ref="renameDialog" title="重命名">
-    <el-form>
-      <el-form-item>
-        <el-input v-model="newName"/>
-      </el-form-item>
-    </el-form>
-    <template #button>
-      <el-button @click="handleRename">确认</el-button>
-    </template>
-  </BasicDialog>
+  <FileRename ref="fileRename"/>
   <FileTagBulkAdd ref="fileTagBulkAdd" @success="getData(currentPath)"/>
   <DiskMatch ref="diskMatch"/>
 </template>

@@ -1,12 +1,11 @@
 import {FileEntity} from "zhangyida-tools";
 import {getMediaType, shallowCopy} from "../util/common";
-import {ElNotification} from "element-plus";
 
 export class FileTagEntity extends FileEntity {
     tag: string[] = []
     selected?: boolean = false
     desc?: string
-    isOnline = false;
+    isOnline?: boolean;
 
     static ofJson(json: any): FileTagEntity {
         const fileEntity = super.ofJson(json);
@@ -93,6 +92,7 @@ function syncDbData(actual: FileTagEntity[], path: string) {
                 actual.push(value)
             } else {
                 actual[findIndex].isOnline = true;
+                value.isOnline = true
             }
         } else if (findIndex === -1) {
             allFiles.value = allFiles.value.filter(value1 => !value1.filePath.startsWith(value.filePath))
@@ -165,6 +165,8 @@ export function writeToDataFile() {
     allFiles.value.forEach(value => {
         // @ts-ignore
         delete value['_removed'];
+        // delete value.isOnline;
+        delete value.selected;
         const mediaType = getMediaType(value.fileName);
         if (value.isFile() && mediaType && !value.tag.includes(mediaType)) {
             value.tag.push(mediaType)
