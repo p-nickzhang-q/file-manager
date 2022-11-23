@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import FileTagsSelect from "./FileTagsSelect.vue";
 import BasicDialog from "../../components/BasicDialog.vue";
-import {FileTagEntity, updateFileTagEntities} from "../../api/file";
+import {CUSTOM_FORM_JSON, FileTagEntity, syncInfo, updateFileTagEntities} from "../../api/file";
 import useTag from "../../hooks/useTag";
-import {shallowCopy} from "../../util/common";
+import CustomFormItems from "../../components/custom/CustomFormItems.vue";
 
 const {ListProcess} = require('zhangyida-tools');
 
@@ -24,7 +24,7 @@ const {ifNewTagThenAdd} = useTag();
 const handleAddTags = () => {
   updateFileTagEntities(selectFiles.value, file => {
     file.tag = ListProcess.of([...file.tag, ...bulkFileTagEntity.value.tag]).unique().toList()
-    shallowCopy(bulkFileTagEntity.value, file, ['desc'])
+    syncInfo(bulkFileTagEntity.value, file)
   })
   ifNewTagThenAdd(bulkFileTagEntity.value.tag)
   emits('success')
@@ -34,6 +34,7 @@ const handleAddTags = () => {
 defineExpose({
   open
 })
+
 </script>
 
 <template>
@@ -42,9 +43,7 @@ defineExpose({
       <el-form-item label="标签">
         <FileTagsSelect v-model:value="bulkFileTagEntity.tag"/>
       </el-form-item>
-      <el-form-item label="描述">
-        <el-input v-model="bulkFileTagEntity.desc" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"/>
-      </el-form-item>
+      <CustomFormItems :config="CUSTOM_FORM_JSON" v-model:form="bulkFileTagEntity"/>
     </el-form>
     <template #button>
       <el-button @click="handleAddTags">确认</el-button>

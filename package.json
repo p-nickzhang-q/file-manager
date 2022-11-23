@@ -1,6 +1,6 @@
 {
   "name": "file-tag",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "electron/main.js",
   "scripts": {
     "electron:dev": "concurrently -k \"npm run dev\" \"npm run electron\"",

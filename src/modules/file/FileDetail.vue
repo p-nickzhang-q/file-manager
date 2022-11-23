@@ -3,7 +3,8 @@ import FileTagsSelect from "./FileTagsSelect.vue";
 import useTag from "../../hooks/useTag";
 import {longTimeFormat} from "../../util/common";
 import {FileEntity} from "zhangyida-tools";
-import {allFiles, FileTagEntity} from "../../api/file";
+import {allFiles, CUSTOM_FORM_JSON, FileTagEntity} from "../../api/file";
+import CustomFormItems from "../../components/custom/CustomFormItems.vue";
 
 const {dialog} = require("@electron/remote");
 const fs = require('fs');
@@ -54,7 +55,7 @@ const showSize = computed(() => {
       <div class="card-header">
         <span>{{ sourceValue.fileName }}</span>
         <div>
-          <!--          <el-button class="button" type="text" v-show="sourceValue.isDirectory()" @click="onExport">导出json</el-button>-->
+          <!-- btn区域         -->
         </div>
       </div>
     </template>
@@ -62,9 +63,7 @@ const showSize = computed(() => {
       <el-form-item label="标签">
         <FileTagsSelect v-model:value="sourceValue.tag"/>
       </el-form-item>
-      <el-form-item label="描述">
-        <el-input v-model="sourceValue.desc" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"/>
-      </el-form-item>
+      <CustomFormItems :config="CUSTOM_FORM_JSON" v-model:form="sourceValue"/>
       <el-form-item label="文件路径">
         {{ sourceValue.filePath }}
       </el-form-item>

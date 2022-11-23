@@ -1,5 +1,5 @@
 import {FileEntity} from "zhangyida-tools";
-import {getMediaType, shallowCopy} from "../util/common";
+import {getMediaType, shallowCopyIgnore} from "../util/common";
 
 export class FileTagEntity extends FileEntity {
     tag: string[] = []
@@ -10,8 +10,8 @@ export class FileTagEntity extends FileEntity {
     static ofJson(json: any): FileTagEntity {
         const fileEntity = super.ofJson(json);
         const fileTagEntity = new FileTagEntity();
-        shallowCopy(json, fileTagEntity, ['desc'])
-        shallowCopy(fileEntity, fileTagEntity)
+        shallowCopyIgnore(json, fileTagEntity)
+        shallowCopyIgnore(fileEntity, fileTagEntity)
         return fileTagEntity;
     }
 }
@@ -32,6 +32,21 @@ const CONFIG_DIR = File.pathJoin(USER_HOME, CONFIG_DIR_NAME);
 File.ofNullable(CONFIG_DIR).orElse(() => File.of(File.getParentFolderPathByPath(CONFIG_DIR)).createChildFolder(CONFIG_DIR_NAME))
 export const DATA_JSON_ENTITY = getDataJsonEntityWithDefault(CONFIG_DIR, TAG_DATA_FILE_NAME);
 export const TAG_DATA_ENTITY = getDataJsonEntityWithDefault(CONFIG_DIR, TAG_FILE_NAME);
+
+export const CUSTOM_FORM_JSON = getDataJsonEntityWithDefault(CONFIG_DIR, "custom_form.json", "{}").json()
+
+function setFields(json: any[], fields: string[]) {
+    json.forEach((v: any) => {
+        if (v?.__config__?.children) {
+            setFields(v?.__config__?.children, fields);
+        } else {
+            fields.push(v.__vModel__)
+        }
+    });
+}
+
+export const customFields: string[] = []
+setFields(CUSTOM_FORM_JSON.fields, customFields);
 
 export function fileEqual(file1: any, file2: any) {
     return file1.filePath === file2.filePath
@@ -68,6 +83,15 @@ export function removeStartWithFile(value: FileTagEntity) {
     allFiles.value = allFiles.value.filter(value1 => !value1.filePath.startsWith(value.filePath))
 }
 
+export function syncInfo(source: any, target: FileTagEntity) {
+    shallowCopyIgnore(source, target, ["fileName",
+        "filePath",
+        "type",
+        "size",
+        "lastUpdateTime",
+        "createTime",])
+}
+
 function syncDbData(actual: FileTagEntity[], path: string) {
     getDbData();
     actual.forEach(value => {
@@ -78,10 +102,7 @@ function syncDbData(actual: FileTagEntity[], path: string) {
         } else {
             // if (value.fileName === 'test.txt') {
             // }
-            // 将配置中的tag,desc付给实际文件
-            shallowCopy(allFiles.value[index], value, ['tag', 'desc'])
-            // 将实际的文件名付给配置
-            shallowCopy(value, allFiles.value[index], ['fileName'])
+            syncInfo(allFiles.value[index], value);
         }
     })
     const currentLevel = getLevel(path);

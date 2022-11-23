@@ -37,6 +37,14 @@ export function shallowCopy(source: any, target: any, properties?: string[]) {
     }
 }
 
+export function shallowCopyIgnore(source: any, target: any, ignoreProperties: string[] = []) {
+    for (let key of Object.keys(source)) {
+        if (!ignoreProperties.includes(key)) {
+            target[key] = source[key]
+        }
+    }
+}
+
 export function getTabNameByFilePath(filePath?: string) {
     if (filePath) {
         const split = filePath.split("/").filter(Boolean);

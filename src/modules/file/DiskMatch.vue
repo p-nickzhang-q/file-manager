@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import BasicDialog from "../../components/BasicDialog.vue";
 import BasicSelect from "../../components/BasicSelect.vue";
-import {allFiles, fileEqual, FileTagEntity, writeToDataFile} from "../../api/file";
+import {allFiles, fileEqual, FileTagEntity, syncInfo, writeToDataFile} from "../../api/file";
 import {BaseError} from "../../util/error";
-import {shallowCopy} from "../../util/common";
 import {ElNotification} from "element-plus";
 
 const dialog = ref();
@@ -41,7 +40,7 @@ const onSave = () => {
       return fileEqual(configFile, v)
     });
     if (find) {
-      shallowCopy(configFile, find, ['desc', 'tag'])
+      syncInfo(configFile, find)
     }
   }
 
