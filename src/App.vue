@@ -3,7 +3,7 @@
     <el-tab-pane label="文件" name="file">
       <FileMain ref="fileMain"/>
     </el-tab-pane>
-    <el-tab-pane label="标签" name="tag">
+    <el-tab-pane label="查询" name="tag">
       <Search @openNewTap="handleOpen"/>
     </el-tab-pane>
   </el-tabs>
