@@ -1,5 +1,5 @@
 import {FileEntity} from "zhangyida-tools";
-import {getMediaType, shallowCopyIgnore} from "../util/common";
+import {deepCopy, getMediaType, shallowCopyIgnore} from "../util/common";
 
 export class FileTagEntity extends FileEntity {
     tag: string[] = []
@@ -35,18 +35,42 @@ export const TAG_DATA_ENTITY = getDataJsonEntityWithDefault(CONFIG_DIR, TAG_FILE
 
 export const CUSTOM_FORM_JSON = getDataJsonEntityWithDefault(CONFIG_DIR, "custom_form.json", "{}").json()
 
-function setFields(json: any[], fields: string[]) {
-    json.forEach((v: any) => {
-        if (v?.__config__?.children) {
-            setFields(v?.__config__?.children, fields);
-        } else {
-            fields.push(v.__vModel__)
-        }
-    });
+const searchFormTags = [
+    "el-input",
+    "el-select",
+    "el-cascader",
+    "el-radio-group",
+    "el-checkbox-group",
+    "el-switch",
+    "el-rate"
+]
+
+export const search_field_process = new Map<string, string>();
+
+function getCustomSearchFormJson() {
+    const filterSearchFormJson = (fields: any) => {
+        return fields.filter((v: any) => {
+            if (v.__config__.children) {
+                v.__config__.children = filterSearchFormJson(v.__config__.children);
+            }
+            const b = searchFormTags.includes(v.__config__?.tag) || v.__config__.children;
+            if (b && v.__vModel__) {
+                const isText = v.__config__?.tag === "el-input";
+                search_field_process.set(v.__vModel__, isText ? 'text' : 'equal')
+            }
+            return b;
+        })
+    };
+    let copyJson = deepCopy(CUSTOM_FORM_JSON);
+
+    copyJson = {
+        ...copyJson,
+        fields: filterSearchFormJson(copyJson.fields)
+    }
+    return copyJson;
 }
 
-export const customFields: string[] = []
-setFields(CUSTOM_FORM_JSON.fields, customFields);
+export const CUSTOM_SEARCH_FORM_JSON = getCustomSearchFormJson();
 
 export function fileEqual(file1: any, file2: any) {
     return file1.filePath === file2.filePath
@@ -197,7 +221,9 @@ export function writeToDataFile() {
             value.tag.push(mediaType)
         }
     })
-    DATA_JSON_ENTITY.writeJson(allFiles.value)
+    if (allFiles.value.length !== 0) {
+        DATA_JSON_ENTITY.writeJson(allFiles.value)
+    }
 }
 
 export function syncDataJson(oldFilePath: string, newFileEntity = new File(), operation = OPERATION.RENAME) {

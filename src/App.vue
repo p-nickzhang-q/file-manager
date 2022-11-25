@@ -4,14 +4,14 @@
       <FileMain ref="fileMain"/>
     </el-tab-pane>
     <el-tab-pane label="标签" name="tag">
-      <TagMain @openNewTap="handleOpen"/>
+      <Search @openNewTap="handleOpen"/>
     </el-tab-pane>
   </el-tabs>
 </template>
 
 <script lang="ts" setup>
 import FileMain from "./modules/file/FileMain.vue";
-import TagMain from "./modules/tag/TagMain.vue";
+import Search from "./modules/tag/Search.vue";
 import {writeToDataFile} from "./api/file";
 
 const active = ref("file");

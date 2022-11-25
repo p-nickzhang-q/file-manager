@@ -68,7 +68,7 @@ export class TabData {
     currentPath = ref("");
     fileLoading = ref(false);
     searchMode = ref(false);
-    currentFile = ref(new FileEntity());
+    currentFile = ref(new FileTagEntity());
     searchValue = ref<string>('');
     LastShiftIndex = ref<number>(0);
     sorts = ref(['default']);
@@ -172,7 +172,7 @@ export function useFile(tabName: string, emits?: any) {
             historyIndex.value = parentIndex + 1
             await goto(filePath);
         }
-        currentFile.value = new FileEntity()
+        currentFile.value = new FileTagEntity()
         fileLoading.value = false
     }
 

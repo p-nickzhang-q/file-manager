@@ -162,3 +162,17 @@ export function getMediaType(fileName: string) {
         return MediaType[key].includes(ext);
     })
 }
+
+// @ts-ignore
+export function objectHasValue(object: object) {
+    return Object.values(object).some(value => {
+        if (value instanceof Array) {
+            return value.length > 0;
+        } else if (value instanceof Object) {
+            return objectHasValue(object)
+        } else {
+            // 基本类型
+            return value
+        }
+    })
+}

@@ -37,6 +37,7 @@ getTags()
       clearable
       :reserve-keyword="false"
       @change="onChange"
+      placeholder="标签"
   >
     <el-option
         v-for="item in tagOptions"
