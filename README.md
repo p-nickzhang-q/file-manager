@@ -38,23 +38,23 @@
 
 [form-generator (gitee.io)](https://mrhj.gitee.io/form-generator/#/)
 
-![image-20221125174347738](D:\Gitee\file-manager\vue3\README.assets\image-20221125174347738.png)
+![image-20221125174347738](./README.assets/image-20221125174347738.png)
 
 ## 工具截图
 
-![image-20221125173447728](D:\Gitee\file-manager\vue3\README.assets\image-20221125173447728.png)
+![image-20221125173447728](./README.assets/image-20221125173447728.png)
 
 
 
 ###### 文件打标签
 
-![image-20221125173615268](D:\Gitee\file-manager\vue3\README.assets\image-20221125173615268.png)
+![image-20221125173615268](./README.assets/image-20221125173615268.png)
 
 
 
 ###### 多选,右键批量修改
 
-![image-20221125173642629](D:\Gitee\file-manager\vue3\README.assets\image-20221125173642629.png)
+![image-20221125173642629](./README.assets/image-20221125173642629.png)
 
 
 
@@ -62,11 +62,11 @@
 
 > 多个标签之间是并且关系
 
- ![image-20221125173744266](D:\Gitee\file-manager\vue3\README.assets\image-20221125173744266.png)
+ ![image-20221125173744266](./README.assets/image-20221125173744266.png)
 
  
 
 ######  标签管理
 
-![image-20221125174043632](D:\Gitee\file-manager\vue3\README.assets\image-20221125174043632.png)
+![image-20221125174043632](./README.assets/image-20221125174043632.png)
 
