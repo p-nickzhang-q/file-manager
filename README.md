@@ -26,6 +26,10 @@
 
 使用了vue3,electron,element-plus组价库
 
+## 下载地址
+
+[file-manager-vue3 发行版 - Gitee.com](https://gitee.com/zhanghao161512/file-manager-vue3/releases)
+
 ## 如何添加自定义数据
 
 可以在下面网页定义好表单,需要确定好字段名和标题.然后点击查看json,将json保存到`C:\Users\用户名\file_tag_config`的`custom_form.json`文件中.然后在工具中按`ctrl+r`刷新工具,就可以刷新自定义的表单了.
